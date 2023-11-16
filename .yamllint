@@ -1,0 +1,14 @@
+---
+# Based on ansible-lint config
+extends: default
+
+ignore:
+  - changelogs/*.yaml
+  - .pre-commit-config.yaml
+
+rules:
+  document-start: disable
+  line-length:
+    max: 160
+  new-lines:
+    type: unix
