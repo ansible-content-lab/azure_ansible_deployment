@@ -1,0 +1,33 @@
+---
+# Infrastructure Defaults
+infrastructure_region: eastus
+infrastructure_tags: []
+
+# Networking
+infrastructure_nsg_name: aap-ports
+infrastructure_vnet_cidr: 172.16.0.0/22
+infrastructure_vnet_name: aap
+infrastructure_vnet_subnets:
+  - name: controller-eda-hub
+    cidr: 172.16.0.0/24
+  - name: execution
+    cidr: 172.16.1.0/24
+  - name: postgres
+    cidr: 172.16.2.0/24
+    delegations:
+      - serviceName: Microsoft.DBforPostgreSQL/flexibleServers
+        name: subnet-{{ deployment_id }}-postgres-delegation
+
+infrastructure_virtual_machines:
+  - name: controller
+    instances: 1
+    subnet: controller-eda-hub
+  - name: execution
+    instances: 0
+    subnet: execution
+  - name: hub
+    instances: 1
+    subnet: controller-eda-hub
+  - name: eda
+    instances: 0
+    subnet: controller-eda-hub

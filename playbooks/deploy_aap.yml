@@ -1,0 +1,11 @@
+---
+- name: Deploy Azure infrastructure
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Deploy Infrastructure
+      ansible.builtin.include_role:
+        name: lab.azure_deployment.infrastructure
+      tags:
+        - always
