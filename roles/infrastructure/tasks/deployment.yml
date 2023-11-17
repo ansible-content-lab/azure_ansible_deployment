@@ -6,7 +6,6 @@
   when:
     - deployment_id is not defined
   tags:
-    - ami
     - network
     - database
     - controller
@@ -19,7 +18,6 @@
       deployment_id: "{{ deployment_id }}"
     per_host: false
   tags:
-    - ami
     - network
     - database
     - controller
@@ -30,7 +28,6 @@
   ansible.builtin.debug:
     msg: "Deployment ID: {{ deployment_id }}"
   tags:
-    - ami
     - network
     - database
     - controller
