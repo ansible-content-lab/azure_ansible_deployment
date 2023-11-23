@@ -7,10 +7,16 @@
     address_prefixes_cidr: "{{ infrastructure_vnet_cidr }}"
     tags: "{{ _infrastructure_tags }}"
   register: result
+  tags:
+    - network
+    - database
 
 - name: Assign the result to variable for later usage
   ansible.builtin.set_fact:
     network: "{{ result.state }}"
+  tags:
+    - network
+    - database
 
 - name: Create subnets
   azure.azcollection.azure_rm_subnet:
@@ -21,23 +27,31 @@
     delegations: "{{ item.delegations | default(omit) }}"
   loop: "{{ infrastructure_vnet_subnets }}"
   register: aap_networking
+  tags:
+    - network
+    - database
 
 - name: Create public IP addresses for systems
   azure.azcollection.azure_rm_publicipaddress:
     resource_group: "{{ resource_group }}"
     allocation_method: Static
-    name: "pip-{{ item.name }}"
+    name: "pip-{{ deployment_id }}-{{ item.name }}"
     location: "{{ infrastructure_region }}"
     tags: "{{ _infrastructure_tags }}"
   loop: "{{ infrastructure_virtual_machines }}"
   when: item.instances > 0
   register: public_ip_addresses
+  tags:
+    - network
 
 - name: Create private dns zone for postgresql
   azure.azcollection.azure_rm_privatednszone:
     resource_group: "{{ resource_group }}"
     name: "aap.postgres.database.azure.com"
   register: private_zone
+  tags:
+    - network
+    - database
 
 - name: Create Network Security Group that allows SSH and RDP
   azure.azcollection.azure_rm_securitygroup:
@@ -59,10 +73,14 @@
         direction: Inbound
     tags: "{{ _infrastructure_tags }}"
   register: result
+  tags:
+    - network
 
 - name: Assign result to variable for later usage
   ansible.builtin.set_fact:
     nsg: "{{ result.state }}"
+  tags:
+    - network
 
 - name: Create virtual network interface card
   azure.azcollection.azure_rm_networkinterface:
@@ -70,12 +88,14 @@
     name: "nic-{{ deployment_id }}-{{ item.name }}"
     virtual_network: "{{ network.id }}"
     subnet: "subnet-{{ deployment_id }}-{{ item.subnet }}"
-    public_ip_name: "pip-{{ item.name }}"
+    public_ip_name: "pip-{{ deployment_id }}-{{ item.name }}"
     security_group: "{{ nsg.name }}"
     location: "{{ infrastructure_region }}"
     ip_configurations:
-      - name: "pip-{{ item.name }}"
-        public_ip_address_name: "pip-{{ item.name }}"
+      - name: "pip-{{ deployment_id }}-{{ item.name }}"
+        public_ip_address_name: "pip-{{ deployment_id }}-{{ item.name }}"
     tags: "{{ _infrastructure_tags }}"
   loop: "{{ infrastructure_virtual_machines }}"
   when: item.instances > 0
+  tags:
+    - network

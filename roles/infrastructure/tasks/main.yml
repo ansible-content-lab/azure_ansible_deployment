@@ -29,3 +29,9 @@
   ansible.builtin.include_tasks: network.yml
   tags:
     - network
+    - database
+
+- name: Create Database
+  ansible.builtin.include_tasks: database.yml
+  tags:
+    - database
