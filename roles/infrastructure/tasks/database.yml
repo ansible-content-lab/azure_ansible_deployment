@@ -53,6 +53,7 @@
         type: "databases"
     body: {"properties": {"charset": "utf8", "collation": "en_US.utf8"}}
   tags: hub
+  when: "'hub' in ansible_run_tags"
 
 - name: Create database for EDA
   azure.azcollection.azure_rm_resource:
@@ -66,6 +67,7 @@
         type: "databases"
     body: {"properties": {"charset": "utf8", "collation": "en_US.utf8"}}
   tags: eda
+  when: "'eda' in ansible_run_tags"
 
 - name: Get list of enabled extensions
   azure.azcollection.azure_rm_resource_info:
