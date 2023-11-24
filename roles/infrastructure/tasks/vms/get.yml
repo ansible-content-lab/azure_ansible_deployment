@@ -20,11 +20,11 @@
       tags:
         - controller
 
-    # Check if this actually turns on a stopped vm
     - name: Ensure existing VMs are running
       azure.azcollection.azure_rm_virtualmachine:
         name: "{{ item }}"
         resource_group: "{{ resource_group }}"
+        started: true
       loop: "{{ infrastructure_existing_vm.vms | map(attribute='name') | list }}"
       register: infrastructure_running_vm
       tags:
