@@ -37,10 +37,10 @@
 #   tags:
 #     - execution
 
-# - name: Create Hub VMs
-#   ansible.builtin.include_tasks: hub.yml
-#   tags:
-#     - hub
+- name: Create Hub VMs
+  ansible.builtin.include_tasks: hub.yml
+  tags:
+    - hub
 
 # - name: Create EDA VMs
 #   ansible.builtin.include_tasks: eda.yml

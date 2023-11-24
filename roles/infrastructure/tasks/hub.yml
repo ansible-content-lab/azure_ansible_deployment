@@ -1,0 +1,68 @@
+---
+- name: Get existing VMs
+  block:
+    - name: Include get vms task
+      ansible.builtin.include_tasks: vms/get.yml
+      vars:
+        app_tag: hub
+        private_host_groups:
+          - aap
+          - hub_private
+        public_host_groups:
+          - hub_public
+      tags:
+        - hub
+
+    - name: Add public IP host to installer
+      when:
+        - infrastructure_running_virtual_machine_public_ip is defined
+        - infrastructure_running_virtual_machine_public_ip.results | length > 0
+        - (groups.installer is not defined or groups.installer | length == 0)
+      ansible.builtin.add_host:
+        groups:
+          - installer
+        name: "{{ infrastructure_running_virtual_machine_public_ip.results[0].publicipaddresses[0].ip_address }}"
+      tags:
+        - hub
+
+- name: Set number of Hub VMs to create
+  ansible.builtin.set_fact:
+    infrastructure_hub_vms_to_create: "{{ (infrastructure_virtual_machines | selectattr('name', 'eq', 'hub') | first).instances -
+      (infrastructure_existing_vm.vms | default([]) | length) }}"
+  tags:
+    - hub
+
+- name: Output number of VMs to create
+  ansible.builtin.debug:
+    msg: "Creating Hub VMs: {{ infrastructure_hub_vms_to_create }}"
+  tags:
+    - hub
+
+- name: Debug
+  ansible.builtin.debug:
+    var: range(infrastructure_hub_vms_to_create | int)
+
+- name: Create VMs
+  when: infrastructure_hub_vms_to_create | int > 0
+  block:
+    - name: Include create vm task
+      ansible.builtin.include_tasks: vms/create.yml
+      loop: "{{ range(infrastructure_hub_vms_to_create | int) }}"
+      vars:
+        app_tag: hub
+        instance_type: "{{ (infrastructure_virtual_machines | selectattr('name', 'eq', 'hub') | first).shape }}"
+        private_host_groups:
+          - aap
+          - hub_private
+        public_host_groups:
+          - hub_public
+        subnet: "{{ infrastructure_subnet_names | select('search', 'hub') | first }}"
+      tags:
+        - hub
+
+    - name: Wait 10 mins for VMs to become available
+      ansible.builtin.wait_for:
+        host: "{{ item }}"
+        port: 22
+        timeout: 600
+      loop: "{{ groups.public }}"
