@@ -10,4 +10,4 @@
         resource_group: "{{ resource_group }}"
         name: "{{ item }}"
         started: false
-      loop: "{{ virtual_machine_name }}"
+      loop: "{{ virtual_machine_names }}"
