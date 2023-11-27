@@ -38,10 +38,6 @@
   tags:
     - controller
 
-- name: Debug
-  ansible.builtin.debug:
-    var: range(infrastructure_controller_vms_to_create | int)
-
 - name: Create VMs
   when: infrastructure_controller_vms_to_create | int > 0
   block:
