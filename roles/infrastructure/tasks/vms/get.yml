@@ -44,6 +44,7 @@
         groups: "{{ public_host_groups + ['public'] | default(['public']) }}"
         name: "{{ item.publicipaddresses[0].ip_address }}"
       loop: "{{ infrastructure_running_virtual_machine_public_ip.results }}"
+      changed_when: false
       tags:
         - controller
 
@@ -52,5 +53,6 @@
         groups: "{{ private_host_groups + ['private'] | default(['private']) }}"
         name: "{{ item.ansible_facts.azure_vm.network_profile.network_interfaces[0].properties.ip_configurations[0].private_ip_address }}"
       loop: "{{ infrastructure_running_vm.results }}"
+      changed_when: false
       tags:
         - controller

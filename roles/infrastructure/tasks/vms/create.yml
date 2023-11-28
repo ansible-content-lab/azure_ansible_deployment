@@ -90,7 +90,7 @@
     - hub
     - eda
 
-- name: Set stats for Controller of new VM
+- name: Set stats for new VM
   ansible.builtin.set_stats:
     data:
       "{{ infrastructure_vm_name | replace('-','_') }}_public_ip": "{{ infrastructure_pip.state.ip_address }}"

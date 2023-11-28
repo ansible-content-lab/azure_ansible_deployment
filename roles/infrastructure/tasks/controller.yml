@@ -14,18 +14,19 @@
         - controller
 
     - name: Add public IP host to installer
-      when:
-        - infrastructure_running_virtual_machine_public_ip is defined
-        - infrastructure_running_virtual_machine_public_ip.results | length > 0
-        - (groups.installer is not defined or groups.installer | length == 0)
       ansible.builtin.add_host:
         groups:
           - installer
         name: "{{ infrastructure_running_virtual_machine_public_ip.results[0].publicipaddresses[0].ip_address }}"
+      when:
+        - infrastructure_running_virtual_machine_public_ip is defined
+        - infrastructure_running_virtual_machine_public_ip.results | length > 0
+        - (groups.installer is not defined or groups.installer | length == 0)
+      changed_when: false
       tags:
         - controller
 
-- name: Set number of Controller VMs to create
+- name: Set number of controller VMs to create
   ansible.builtin.set_fact:
     infrastructure_controller_vms_to_create: "{{ (infrastructure_virtual_machines | selectattr('name', 'eq', 'controller') | first).instances -
       (infrastructure_existing_vm.vms | default([]) | length) }}"
@@ -34,7 +35,7 @@
 
 - name: Output number of VMs to create
   ansible.builtin.debug:
-    msg: "Creating Controller VMs: {{ infrastructure_controller_vms_to_create }}"
+    msg: "Creating controller VMs: {{ infrastructure_controller_vms_to_create }}"
   tags:
     - controller
 
