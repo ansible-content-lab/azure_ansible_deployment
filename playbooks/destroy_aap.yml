@@ -24,6 +24,14 @@
   gather_facts: false
   become: true
   tasks:
+    - name: Check for required variables
+      ansible.builtin.assert:
+        that:
+          - aap_red_hat_username is defined
+          - aap_red_hat_username | length > 0
+          - aap_red_hat_password is defined
+          - aap_red_hat_password | length > 0
+
     - name: Unregister subscription manager
       community.general.redhat_subscription:
         state: absent
