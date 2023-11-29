@@ -16,7 +16,10 @@ There are variables that can be used to skip or prevent steps by setting variabl
 | Create a Virtual Network | Creates a virtual network with a CIDR block that can contain the subnets that will be created. |
 | Create Subnets | Creates the subnets for automation controller, execution environments, private automation hub, and Event-Driven Ansible. |
 | Create Public IPs | Creates public IPs so that the VMs have access to the internet. |
+| Create Private DNS Zone | Creates the private DNS zone for PostgreSQL. |
 | Create a Network Security Group | Creates a security group that allows AAP ports within the VNET, and HTTPS and automation mesh ports externally. |
+| Create Controller VMs | Creates VMs for Controller, a public IP and the virtual network interface card with the public IP attached. |
+| Create Hub VMs | Creates VMs for Private Automation Hub, a public IP and the virtual network interface card with the public IP attached. |
 
 ## Getting Started
 
@@ -80,7 +83,12 @@ This section will walk through deploying the Azure infrastructure and Ansible Au
 
 ### Running the Playbook
 
-Assuming that all variables are configured properly and your AWS account has permissions to deploy the resources defined in this collection, then running the playbook should be a single task.
+These 2 variables below are required for running the Playbook
+
+- aap_red_hat_username (This is your Red Hat account name that will be used for Subscription Management)
+- aap_red_hat_password (The Red Hat account password)
+
+Assuming that all variables are configured properly and your Azure account has permissions to deploy the resources defined in this collection, then running the playbook should be a single task.
 
 ```bash
 ansible-playbook lab.azure_deployment.deploy_aap

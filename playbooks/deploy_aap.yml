@@ -9,3 +9,49 @@
         name: lab.azure_deployment.infrastructure
       tags:
         - always
+
+    - name: Wait 10 mins for all VMs to become available
+      ansible.builtin.wait_for:
+        host: "{{ item }}"
+        port: 22
+        timeout: 600
+      loop: "{{ groups.public }}"
+      tags:
+        - controller
+        - hub
+        - eda
+
+- name: Ensure VMs are up-to-date
+  hosts: public
+  gather_facts: true
+  become: true
+  tasks:
+    - name: Register subscription manager
+      community.general.redhat_subscription:
+        state: present
+        username: "{{ aap_red_hat_username }}"
+        password: "{{ aap_red_hat_password }}"
+        auto_attach: true
+      tags:
+        - controller
+        - hub
+        - eda
+
+    - name: Ensure rhsm is managing repos
+      ansible.builtin.lineinfile:
+        path: /etc/rhsm/rhsm.conf
+        regexp: '^manage_repos = '
+        line: manage_repos = 1
+      tags:
+        - controller
+        - hub
+        - eda
+
+    - name: Upgrade all packages
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+      tags:
+        - controller
+        - hub
+        - eda
