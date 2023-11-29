@@ -1,17 +1,17 @@
 {
   "location": "{{ infrastructure_region }}",
   "sku": {
-    "tier": "{{ database_server_sku_tier }}",
-    "name": "{{ database_server_sku_name }}"
+    "tier": "{{ infrastructure_database_server_sku_tier }}",
+    "name": "{{ infrastructure_database_server_sku_name }}"
   },
   "properties": {
-    "administratorLogin": "{{ database_server_user }}",
-    "administratorLoginPassword": "{{ database_server_password }}",
-    "version": "{{ database_server_version }}",
-    "charset": "{{ database_server_charset }}",
-    "collation": "{{ database_server_collation }}",
+    "administratorLogin": "{{ infrastructure_database_server_user }}",
+    "administratorLoginPassword": "{{ infrastructure_database_server_password }}",
+    "version": "{{ infrastructure_database_server_version }}",
+    "charset": "{{ infrastructure_database_server_charset }}",
+    "collation": "{{ infrastructure_database_server_collation }}",
     "storage": {
-      "storageSizeGB": "{{ database_server_size }}"
+      "storageSizeGB": "{{ infrastructure_database_server_size }}"
     },
     "network": {
       "delegatedSubnetResourceId": "{{ aap_networking.results[2].state.id }}",

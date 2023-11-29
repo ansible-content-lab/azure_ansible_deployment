@@ -19,14 +19,16 @@ infrastructure_vnet_subnets:
         name: subnet-{{ deployment_id }}-postgres-delegation
 
 # Database
-database_server_user: "user_placeholder"
-database_server_password: ""
-database_server_sku_tier: "GeneralPurpose"
-database_server_sku_name: "Standard_D4s_v3"
-database_server_version: "13"
-database_server_charset: "utf8"
-database_server_collation: "en_US.utf8"
-database_server_size: 64
+infrastructure_database_server_user: "user_placeholder"
+infrastructure_database_server_password: "test1234!"
+infrastructure_database_server_sku_tier: "GeneralPurpose"
+infrastructure_database_server_sku_name: "Standard_D4s_v3"
+infrastructure_database_server_version: "13"
+infrastructure_database_server_charset: "UTF8"
+infrastructure_database_server_collation: "en_US.utf8"
+infrastructure_database_server_size: 64
+infrastructure_database_extensions:
+  - hstore
 
 # Virtual Machines
 infrastructure_virtual_machines:

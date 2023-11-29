@@ -37,7 +37,10 @@
     subresource:
       - name: "awx"
         type: "databases"
-    body: {"properties": {"charset": "utf8", "collation": "en_US.utf8"}}
+    body:
+      properties:
+        charset: "{{ infrastructure_database_server_charset }}"
+        collation: "{{ infrastructure_database_server_collation }}"
   tags:
     - database
 
@@ -51,9 +54,14 @@
     subresource:
       - name: "hub"
         type: "databases"
-    body: {"properties": {"charset": "utf8", "collation": "en_US.utf8"}}
-  tags: hub
-  when: "'hub' in ansible_run_tags"
+    body:
+      properties:
+        charset: "{{ infrastructure_database_server_charset }}"
+        collation: "{{ infrastructure_database_server_collation }}"
+  tags:
+    - hub
+    - database
+  when: (infrastructure_virtual_machines | selectattr("name", "eq", "hub") | first).instances > 0
 
 - name: Create database for EDA
   azure.azcollection.azure_rm_resource:
@@ -65,9 +73,14 @@
     subresource:
       - name: "eda"
         type: "databases"
-    body: {"properties": {"charset": "utf8", "collation": "en_US.utf8"}}
-  tags: eda
-  when: "'eda' in ansible_run_tags"
+    body:
+      properties:
+        charset: "{{ infrastructure_database_server_charset }}"
+        collation: "{{ infrastructure_database_server_collation }}"
+  tags:
+    - eda
+    - database
+  when: (infrastructure_virtual_machines | selectattr("name", "eq", "eda") | first).instances > 0
 
 - name: Get list of enabled extensions
   azure.azcollection.azure_rm_resource_info:
@@ -87,7 +100,8 @@
     resource_group: "{{ resource_group }}"
     resource_name: "aap-infrastructure-{{ deployment_id }}-db/configurations/azure.extensions"
     resource_type: 'flexibleServers'
-    body: "{{ postgresql_info.response[0] | combine({'properties': {'value': (extensions | default('') | join(',')), 'source': 'user-override'}}) }}"
+    body: "{{ postgresql_info.response[0] |
+      combine({'properties': {'value': (infrastructure_database_extensions | default('') | join(',')), 'source': 'user-override'}}) }}"
   tags:
     - database
 
