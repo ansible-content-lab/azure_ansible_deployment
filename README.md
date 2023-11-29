@@ -90,12 +90,12 @@ The variables below are required for running the playbook
 Assuming that all variables are configured properly and your Azure account has permissions to deploy the resources defined in this collection, then running the playbook should be a single task. For example:
 
 ```bash
-ansible-playbook lab.azure_deployment.deploy_aap --extra-vars "aap_red_hat_username=$RED_HAT_ACCOUNT aap_red_hat_password=$RED_HAT_PASSWORD infrastructure_database_server_user=example_user infrastructure_database_server_password=example_password"
+ansible-playbook lab.azure_deployment.deploy_infrastructure --extra-vars "aap_red_hat_username=$RED_HAT_ACCOUNT aap_red_hat_password=$RED_HAT_PASSWORD infrastructure_database_server_user=example_user infrastructure_database_server_password=example_password"
 ```
 
 ## Uninstall
 
-The `playbooks/destroy_aap.yml` playbook will remove RHEL subscription entitlements and deprovision the infrastructure that has been deployed in the given resource group.
+The `destroy_infrastructure` playbook will remove RHEL subscription entitlements and deprovision the infrastructure that has been deployed in the given resource group.
 This will permanently remove all data and infrastructure in the resource group, so only run this playbook if you are sure that you want to delete all traces of the deployment.
 
 The variables below are required for running the playbook
@@ -106,5 +106,5 @@ The variables below are required for running the playbook
 | `aap_red_hat_password` | The Red Hat account password. |
 
 ```bash
-ansible-playbook lab.azure_deployment.destroy_aap --extra-vars "aap_red_hat_username=$RED_HAT_ACCOUNT aap_red_hat_password=$RED_HAT_PASSWORD"
+ansible-playbook lab.azure_deployment.destroy_infrastructure --extra-vars "aap_red_hat_username=$RED_HAT_ACCOUNT aap_red_hat_password=$RED_HAT_PASSWORD"
 ```
