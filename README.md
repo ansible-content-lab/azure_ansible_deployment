@@ -78,7 +78,7 @@ This section will walk through deploying the Azure infrastructure and Ansible Au
 
 ### Running the Playbook
 
-These 4 variables below are required for running the Playbook
+The variables below are required for running the playbook
 
 | Variable | Description |
 | -------- | ----------- |
@@ -95,8 +95,15 @@ ansible-playbook lab.azure_deployment.deploy_aap --extra-vars "aap_red_hat_usern
 
 ## Uninstall
 
-The `playbooks/destroy_aap.yml` playbook will remove RHEL subscription entitlements and deprovision the infrastructure that has been associated with a deployment id.
-This will permanently remove all data, so only run this playbook if you are sure that you want to delete all traces of the deployment.
+The `playbooks/destroy_aap.yml` playbook will remove RHEL subscription entitlements and deprovision the infrastructure that has been deployed in the given resource group.
+This will permanently remove all data and infrastructure in the resource group, so only run this playbook if you are sure that you want to delete all traces of the deployment.
+
+The variables below are required for running the playbook
+
+| Variable | Description |
+| -------- | ----------- |
+| `aap_red_hat_username` | This is your Red Hat account name that will be used for Subscription Management. |
+| `aap_red_hat_password` | The Red Hat account password. |
 
 ```bash
 ansible-playbook lab.azure_deployment.destroy_aap --extra-vars "aap_red_hat_username=$RED_HAT_ACCOUNT aap_red_hat_password=$RED_HAT_PASSWORD"
