@@ -17,6 +17,7 @@ There are variables that can be used to skip or prevent steps by setting variabl
 | Create Subnets | Creates the subnets for automation controller, execution environments, private automation hub, and Event-Driven Ansible. |
 | Create Public IPs | Creates public IPs so that the VMs have access to the internet. |
 | Create a Network Security Group | Creates a security group that allows AAP ports within the VNET, and HTTPS and automation mesh ports externally. |
+| Create a Database server | Creates a PostgreSQL Flexible Server and the necessary databases inside of it for the Controller, Hub or Event-Driven Ansible components. |
 
 ## Getting Started
 
@@ -80,10 +81,16 @@ This section will walk through deploying the Azure infrastructure and Ansible Au
 
 ### Running the Playbook
 
-Assuming that all variables are configured properly and your AWS account has permissions to deploy the resources defined in this collection, then running the playbook should be a single task.
+Assuming that all variables are configured properly and your Azure account has permissions to deploy the resources defined in this collection, then running the playbook should be a single task.
 
 ```bash
 ansible-playbook lab.azure_deployment.deploy_aap
+```
+
+We encourage to modify or pass as extra-vars some sensible information like Database credentials. For example, deploying using specific credentials for the Database server:
+
+```bash
+ansible-playbook lab.azure_deployment.deploy_aap --extra-vars "infrastructure_database_server_user=example_user infrastructure_database_server_password=example_password"
 ```
 
 ## Uninstall
