@@ -15,6 +15,7 @@
     address_prefix: "{{ item.cidr }}"
     virtual_network: "{{ infrastructure_network.state.name }}"
     delegations: "{{ item.delegations | default(omit) }}"
+  loop: "{{ infrastructure_vnet_subnets }}"
   register: infrastructure_subnets
 
 - name: Save subnet ids
