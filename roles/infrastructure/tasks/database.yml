@@ -1,4 +1,12 @@
 ---
+- name: Check DB server credentials are defined
+  ansible.builtin.assert:
+    that:
+      - infrastructure_database_server_user is defined
+      - infrastructure_database_server_password is defined
+  tags:
+    - database
+
 - name: Create PostgreSQL Flexible Server
   azure.azcollection.azure_rm_resource:
     idempotency: true

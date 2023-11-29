@@ -14,8 +14,8 @@
       "storageSizeGB": "{{ infrastructure_database_server_size }}"
     },
     "network": {
-      "delegatedSubnetResourceId": "{{ aap_networking.results[2].state.id }}",
-      "privateDnsZoneArmResourceId": "{{ private_zone.state.id }}"
+      "delegatedSubnetResourceId": "{{ (infrastructure_subnets.results | selectattr('state.id', 'search', 'postgres'))[0].state.id }}",
+      "privateDnsZoneArmResourceId": "{{ infrastructure_private_zone.state.id }}"
     }
   }
 }

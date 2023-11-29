@@ -84,20 +84,17 @@ This section will walk through deploying the Azure infrastructure and Ansible Au
 
 ### Running the Playbook
 
-These 2 variables below are required for running the Playbook
+These 4 variables below are required for running the Playbook
 
 - aap_red_hat_username (This is your Red Hat account name that will be used for Subscription Management)
 - aap_red_hat_password (The Red Hat account password)
-
-There are also 2 variables that we'd encourage to be passed as extra-vars for the Database credentials:
-
 - infrastructure_database_server_user (Username that will be the admin of the new Database server)
 - infrastructure_database_server_password (Password of the admin username)
 
 Assuming that all variables are configured properly and your Azure account has permissions to deploy the resources defined in this collection, then running the playbook should be a single task. For example:
 
 ```bash
-ansible-playbook lab.azure_deployment.deploy_aap --extra-vars "infrastructure_database_server_user=example_user infrastructure_database_server_password=example_password"
+ansible-playbook lab.azure_deployment.deploy_aap --extra-vars "aap_red_hat_username=example_user aap_red_hat_password=example_pass infrastructure_database_server_user=example_user infrastructure_database_server_password=example_password"
 ```
 
 ## Uninstall
