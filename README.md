@@ -18,6 +18,7 @@ There are variables that can be used to skip or prevent steps by setting variabl
 | Create Public IPs | Creates public IPs so that the VMs have access to the internet. |
 | Create Private DNS Zone | Creates the private DNS zone for PostgreSQL. |
 | Create a Network Security Group | Creates a security group that allows AAP ports within the VNET, and HTTPS and automation mesh ports externally. |
+| Create a Database server | Creates a PostgreSQL Flexible Server and the necessary databases inside of it for the Controller, Hub or Event-Driven Ansible components. |
 | Create Controller VMs | Creates VMs for Controller, a public IP and the virtual network interface card with the public IP attached. |
 | Create Hub VMs | Creates VMs for Private Automation Hub, a public IP and the virtual network interface card with the public IP attached. |
 
@@ -83,15 +84,17 @@ This section will walk through deploying the Azure infrastructure and Ansible Au
 
 ### Running the Playbook
 
-These 2 variables below are required for running the Playbook
+These 4 variables below are required for running the Playbook
 
 - aap_red_hat_username (This is your Red Hat account name that will be used for Subscription Management)
 - aap_red_hat_password (The Red Hat account password)
+- infrastructure_database_server_user (Username that will be the admin of the new Database server)
+- infrastructure_database_server_password (Password of the admin username)
 
-Assuming that all variables are configured properly and your Azure account has permissions to deploy the resources defined in this collection, then running the playbook should be a single task.
+Assuming that all variables are configured properly and your Azure account has permissions to deploy the resources defined in this collection, then running the playbook should be a single task. For example:
 
 ```bash
-ansible-playbook lab.azure_deployment.deploy_aap
+ansible-playbook lab.azure_deployment.deploy_aap --extra-vars "aap_red_hat_username=example_user aap_red_hat_password=example_pass infrastructure_database_server_user=example_user infrastructure_database_server_password=example_password"
 ```
 
 ## Uninstall

@@ -1,0 +1,121 @@
+---
+- name: Check DB server credentials are defined
+  ansible.builtin.assert:
+    that:
+      - infrastructure_database_server_user is defined
+      - infrastructure_database_server_password is defined
+  tags:
+    - database
+
+- name: Create PostgreSQL Flexible Server
+  azure.azcollection.azure_rm_resource:
+    idempotency: true
+    provider: 'DBforPostgreSQL'
+    resource_group: "{{ resource_group }}"
+    resource_name: "aap-infrastructure-{{ deployment_id }}-db"
+    resource_type: 'flexibleServers'
+    api_version: '2022-12-01'
+    body: "{{ lookup('template', 'database_config.j2') }}"
+  tags:
+    - database
+
+- name: Wait for PostgreSQL Flexible Server to finish provisioning
+  azure.azcollection.azure_rm_resource_info:
+    provider: 'DBforPostgreSQL'
+    resource_group: "{{ resource_group }}"
+    resource_name: "aap-infrastructure-{{ deployment_id }}-db"
+    resource_type: 'flexibleServers'
+    api_version: '2022-12-01'
+  register: result
+  until: result.response[0].properties is defined and result.response[0].properties.state == 'Ready'
+  retries:
+    20
+  delay:
+    60
+  tags:
+    - database
+
+- name: Create database for Controller
+  azure.azcollection.azure_rm_resource:
+    idempotency: true
+    resource_name: "aap-infrastructure-{{ deployment_id }}-db"
+    resource_group: "{{ resource_group }}"
+    provider: 'DBforPostgreSQL'
+    resource_type: "flexibleServers"
+    subresource:
+      - name: "awx"
+        type: "databases"
+    body:
+      properties:
+        charset: "{{ infrastructure_database_server_charset }}"
+        collation: "{{ infrastructure_database_server_collation }}"
+  tags:
+    - database
+
+- name: Create database for Hub
+  azure.azcollection.azure_rm_resource:
+    idempotency: true
+    resource_name: "aap-infrastructure-{{ deployment_id }}-db"
+    resource_group: "{{ resource_group }}"
+    provider: 'DBforPostgreSQL'
+    resource_type: "flexibleServers"
+    subresource:
+      - name: "hub"
+        type: "databases"
+    body:
+      properties:
+        charset: "{{ infrastructure_database_server_charset }}"
+        collation: "{{ infrastructure_database_server_collation }}"
+  tags:
+    - hub
+    - database
+  when: (infrastructure_virtual_machines | selectattr("name", "eq", "hub") | first).instances > 0
+
+- name: Create database for EDA
+  azure.azcollection.azure_rm_resource:
+    idempotency: true
+    resource_name: "aap-infrastructure-{{ deployment_id }}-db"
+    resource_group: "{{ resource_group }}"
+    provider: 'DBforPostgreSQL'
+    resource_type: "flexibleServers"
+    subresource:
+      - name: "eda"
+        type: "databases"
+    body:
+      properties:
+        charset: "{{ infrastructure_database_server_charset }}"
+        collation: "{{ infrastructure_database_server_collation }}"
+  tags:
+    - eda
+    - database
+  when: (infrastructure_virtual_machines | selectattr("name", "eq", "eda") | first).instances > 0
+
+- name: Get list of enabled extensions
+  azure.azcollection.azure_rm_resource_info:
+    provider: 'DBforPostgreSQL'
+    resource_group: "{{ resource_group }}"
+    resource_name: "aap-infrastructure-{{ deployment_id }}-db/configurations/azure.extensions"
+    resource_type: 'flexibleServers'
+    api_version: '2022-12-01'
+  register: postgresql_info
+  tags:
+    - database
+
+- name: Enable extensions
+  azure.azcollection.azure_rm_resource:
+    idempotency: true
+    provider: 'DBforPostgreSQL'
+    resource_group: "{{ resource_group }}"
+    resource_name: "aap-infrastructure-{{ deployment_id }}-db/configurations/azure.extensions"
+    resource_type: 'flexibleServers'
+    body: "{{ postgresql_info.response[0] |
+      combine({'properties': {'value': (infrastructure_database_extensions | default('') | join(',')), 'source': 'user-override'}}) }}"
+  tags:
+    - database
+
+- name: Identify the database properties
+  ansible.builtin.set_fact:
+    database_fqdn: "{{ result.response[0].properties.fullyQualifiedDomainName }}"
+    database_username: "{{ result.response[0].properties.administratorLogin }}"
+  tags:
+    - database

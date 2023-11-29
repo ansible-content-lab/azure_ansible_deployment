@@ -18,6 +18,17 @@ infrastructure_vnet_subnets:
       - serviceName: Microsoft.DBforPostgreSQL/flexibleServers
         name: subnet-{{ deployment_id }}-postgres-delegation
 
+# Database
+infrastructure_database_server_sku_tier: "GeneralPurpose"
+infrastructure_database_server_sku_name: "Standard_D4s_v3"
+infrastructure_database_server_version: "13"
+infrastructure_database_server_charset: "UTF8"
+infrastructure_database_server_collation: "en_US.utf8"
+infrastructure_database_server_size: 64
+infrastructure_database_extensions:
+  - hstore
+
+# Virtual Machines
 infrastructure_virtual_machines:
   - name: controller
     instances: 1

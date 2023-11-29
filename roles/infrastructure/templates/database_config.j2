@@ -1,0 +1,21 @@
+{
+  "location": "{{ infrastructure_region }}",
+  "sku": {
+    "tier": "{{ infrastructure_database_server_sku_tier }}",
+    "name": "{{ infrastructure_database_server_sku_name }}"
+  },
+  "properties": {
+    "administratorLogin": "{{ infrastructure_database_server_user }}",
+    "administratorLoginPassword": "{{ infrastructure_database_server_password }}",
+    "version": "{{ infrastructure_database_server_version }}",
+    "charset": "{{ infrastructure_database_server_charset }}",
+    "collation": "{{ infrastructure_database_server_collation }}",
+    "storage": {
+      "storageSizeGB": "{{ infrastructure_database_server_size }}"
+    },
+    "network": {
+      "delegatedSubnetResourceId": "{{ (infrastructure_subnets.results | selectattr('state.id', 'search', 'postgres'))[0].state.id }}",
+      "privateDnsZoneArmResourceId": "{{ infrastructure_private_zone.state.id }}"
+    }
+  }
+}

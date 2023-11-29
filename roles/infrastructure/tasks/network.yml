@@ -7,6 +7,8 @@
     address_prefixes_cidr: "{{ infrastructure_vnet_cidr }}"
     tags: "{{ _infrastructure_tags }}"
   register: infrastructure_network
+  tags:
+    - database
 
 - name: Create subnets
   azure.azcollection.azure_rm_subnet:
@@ -17,16 +19,22 @@
     delegations: "{{ item.delegations | default(omit) }}"
   loop: "{{ infrastructure_vnet_subnets }}"
   register: infrastructure_subnets
+  tags:
+    - database
 
 - name: Save subnet ids
   ansible.builtin.set_fact:
     infrastructure_subnet_names: "{{ infrastructure_subnets.results | map(attribute='state.name') | list }}"
+  tags:
+    - database
 
 - name: Create private dns zone for postgresql
   azure.azcollection.azure_rm_privatednszone:
     resource_group: "{{ resource_group }}"
     name: "aap.postgres.database.azure.com"
   register: infrastructure_private_zone
+  tags:
+    - database
 
 - name: Create Network Security Group that allows SSH and RDP
   azure.azcollection.azure_rm_securitygroup:
@@ -48,3 +56,5 @@
         direction: Inbound
     tags: "{{ _infrastructure_tags }}"
   register: infrastructure_nsg
+  tags:
+    - database

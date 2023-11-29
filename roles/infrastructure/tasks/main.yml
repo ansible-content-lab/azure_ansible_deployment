@@ -26,6 +26,12 @@
   ansible.builtin.include_tasks: network.yml
   tags:
     - always
+    - database
+
+- name: Create Database
+  ansible.builtin.include_tasks: database.yml
+  tags:
+    - database
 
 - name: Create Controller VMs
   ansible.builtin.include_tasks: controller.yml
