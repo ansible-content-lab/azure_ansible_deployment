@@ -6,8 +6,6 @@
       - deployment:aap-infrastructure-{{ deployment_id }}
       - app:{{ app_tag }}
   register: infrastructure_existing_vm
-  tags:
-    - controller
 
 - name: Get VM IPs
   when:
@@ -17,8 +15,6 @@
     - name: Output number of existing VMs
       ansible.builtin.debug:
         msg: "Number of existing {{ app_tag }} VMs: {{ infrastructure_existing_vm.vms | length }}"
-      tags:
-        - controller
 
     - name: Ensure existing VMs are running
       azure.azcollection.azure_rm_virtualmachine:
@@ -27,8 +23,6 @@
         started: true
       loop: "{{ infrastructure_existing_vm.vms | map(attribute='name') | list }}"
       register: infrastructure_running_vm
-      tags:
-        - controller
 
     - name: Gather public IP address
       azure.azcollection.azure_rm_publicipaddress_info:
@@ -36,8 +30,6 @@
         name: "{{ item.ansible_facts.azure_vm.network_profile.network_interfaces[0].properties.ip_configurations[0].public_ip_address.name }}"
       loop: "{{ infrastructure_running_vm.results }}"
       register: infrastructure_running_virtual_machine_public_ip
-      tags:
-        - controller
 
     - name: Add public IP hosts to group
       ansible.builtin.add_host:
@@ -45,8 +37,6 @@
         name: "{{ item.publicipaddresses[0].ip_address }}"
       loop: "{{ infrastructure_running_virtual_machine_public_ip.results }}"
       changed_when: false
-      tags:
-        - controller
 
     - name: Add private IPs hosts to group
       ansible.builtin.add_host:
@@ -54,5 +44,3 @@
         name: "{{ item.ansible_facts.azure_vm.network_profile.network_interfaces[0].properties.ip_configurations[0].private_ip_address }}"
       loop: "{{ infrastructure_running_vm.results }}"
       changed_when: false
-      tags:
-        - controller

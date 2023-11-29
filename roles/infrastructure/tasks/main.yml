@@ -3,52 +3,33 @@
   ansible.builtin.assert:
     that:
       - (infrastructure_virtual_machines | selectattr("name", "eq", "controller") | first).instances > 0
-    msg: This tool must install at least one instance of Ansible Automation Controller
-  tags:
-    - always
+    msg: This tool must install at least one instance of automation controller
 
 - name: Create deployment details
   ansible.builtin.include_tasks: deployment.yml
-  tags:
-    - always
 
 - name: Set tag variables
   ansible.builtin.include_tasks: tags.yml
-  tags:
-    - always
 
 - name: Create the resource group
   azure.azcollection.azure_rm_resourcegroup:
     name: "{{ resource_group }}"
     location: "{{ infrastructure_region }}"
 
-- name: Configure Network
+- name: Configure the network
   ansible.builtin.include_tasks: network.yml
-  tags:
-    - always
-    - database
 
-- name: Create Database
+- name: Create the database
   ansible.builtin.include_tasks: database.yml
-  tags:
-    - database
 
-- name: Create Controller VMs
+- name: Create controller VMs
   ansible.builtin.include_tasks: controller.yml
-  tags:
-    - controller
 
 # - name: Create Execution Node VMs
 #   ansible.builtin.include_tasks: execution.yml
-#   tags:
-#     - execution
 
-- name: Create Hub VMs
+- name: Create hub VMs
   ansible.builtin.include_tasks: hub.yml
-  tags:
-    - hub
 
 # - name: Create EDA VMs
 #   ansible.builtin.include_tasks: eda.yml
-#   tags:
-#     - eda

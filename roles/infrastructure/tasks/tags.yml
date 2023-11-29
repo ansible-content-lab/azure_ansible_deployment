@@ -5,11 +5,7 @@
       purpose: automation
       environment: ansible-automation-platform
       deployment: "aap-infrastructure-{{ deployment_id }}"
-  tags:
-    - always
 
 - name: Merge persistent tags with user defined tags
   ansible.builtin.set_fact:
     _infrastructure_tags: "{{ infrastructure_tags | combine(persistent_tags) }}"
-  tags:
-    - always

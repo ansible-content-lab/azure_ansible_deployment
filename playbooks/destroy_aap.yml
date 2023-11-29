@@ -1,14 +1,34 @@
 ---
-# - name: Remove RHEL entitlements
-#   hosts: aap
-#   gather_facts: false
-#   become: true
-#   tasks:
-#     - name: Unregister subscription manager
-#       community.general.redhat_subscription:
-#         state: absent
-#         username: "{{ aap_red_hat_username }}"
-#         password: "{{ aap_red_hat_password }}"
+- name: Get deployment VMs
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Get the existing VMs
+      azure.azcollection.azure_rm_publicipaddress_info:
+        resource_group: "{{ resource_group }}"
+      register: public_ips
+
+    - name: Add the public IP to the aap group
+      when:
+        - public_ips is defined
+        - public_ips.publicipaddresses | length > 0
+      ansible.builtin.add_host:
+        groups:
+          - aap
+        name: "{{ item.ip_address }}"
+      loop: "{{ public_ips.publicipaddresses }}"
+
+- name: Remove RHEL entitlements
+  hosts: aap
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Unregister subscription manager
+      community.general.redhat_subscription:
+        state: absent
+        username: "{{ aap_red_hat_username }}"
+        password: "{{ aap_red_hat_password }}"
 
 - name: Destroy Azure infrastructure
   hosts: localhost

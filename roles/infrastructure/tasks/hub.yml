@@ -1,30 +1,22 @@
 ---
-- name: Get existing VMs
-  block:
-    - name: Include get vms task
-      ansible.builtin.include_tasks: vms/get.yml
-      vars:
-        app_tag: hub
-        private_host_groups:
-          - aap
-          - hub_private
-        public_host_groups:
-          - hub_public
-      tags:
-        - hub
+- name: Include get vms task
+  ansible.builtin.include_tasks: vms/get.yml
+  vars:
+    app_tag: hub
+    private_host_groups:
+      - aap
+      - hub_private
+    public_host_groups:
+      - hub_public
 
 - name: Set number of hub VMs to create
   ansible.builtin.set_fact:
     infrastructure_hub_vms_to_create: "{{ (infrastructure_virtual_machines | selectattr('name', 'eq', 'hub') | first).instances -
       (infrastructure_existing_vm.vms | default([]) | length) }}"
-  tags:
-    - hub
 
 - name: Output number of VMs to create
   ansible.builtin.debug:
     msg: "Creating hub VMs: {{ infrastructure_hub_vms_to_create }}"
-  tags:
-    - hub
 
 - name: Create VMs
   when: infrastructure_hub_vms_to_create | int > 0
@@ -41,8 +33,6 @@
         public_host_groups:
           - hub_public
         subnet: "{{ infrastructure_subnet_names | select('search', 'hub') | first }}"
-      tags:
-        - hub
 
     - name: Wait 10 mins for VMs to become available
       ansible.builtin.wait_for:
