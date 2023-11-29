@@ -44,3 +44,25 @@ infrastructure_virtual_machines:
   - name: eda
     instances: 0
     subnet: controller-eda-hub
+
+# Compute
+infrastructure_admin_username: azureuser
+infrastructure_password_enabled: false
+
+infrastructure_ami:
+  offer: RHEL
+  publisher: RedHat
+  sku: "9-lvm-gen2"
+  version: latest
+
+aap_installer_ssh_key: azure_test_key
+infrastructure_ssh_public_keys:
+  - path: "/home/azureuser/.ssh/authorized_keys"
+    key_data: "{{ lookup('file', '{{ aap_installer_ssh_key }}') }}"
+
+infrastructure_controller_shape: Standard_B4ms
+infrastructure_execution_shape: Standard_B4ms
+infrastructure_hub_shape: Standard_B4ms
+infrastructure_eda_shape: Standard_B4ms
+infrastructure_managed_disk_type: Premium_LRS
+infrastructure_os_disk_size_gb: 100

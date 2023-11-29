@@ -1,0 +1,13 @@
+---
+- name: Shutdown AAP VMs
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  tasks:
+    - name: Shutdown VMs based on VM names
+      azure.azcollection.azure_rm_virtualmachine:
+        resource_group: "{{ resource_group }}"
+        name: "{{ item }}"
+        started: false
+      loop: "{{ virtual_machine_names }}"
