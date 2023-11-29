@@ -1,0 +1,65 @@
+---
+- name: Get existing VMs
+  block:
+    - name: Include get vms task
+      ansible.builtin.include_tasks: vms/get.yml
+      vars:
+        app_tag: controller
+        private_host_groups:
+          - aap
+          - controller_private
+        public_host_groups:
+          - controller_public
+      tags:
+        - controller
+
+    - name: Add public IP host to installer
+      ansible.builtin.add_host:
+        groups:
+          - installer
+        name: "{{ infrastructure_running_virtual_machine_public_ip.results[0].publicipaddresses[0].ip_address }}"
+      when:
+        - infrastructure_running_virtual_machine_public_ip is defined
+        - infrastructure_running_virtual_machine_public_ip.results | length > 0
+        - (groups.installer is not defined or groups.installer | length == 0)
+      changed_when: false
+      tags:
+        - controller
+
+- name: Set number of controller VMs to create
+  ansible.builtin.set_fact:
+    infrastructure_controller_vms_to_create: "{{ (infrastructure_virtual_machines | selectattr('name', 'eq', 'controller') | first).instances -
+      (infrastructure_existing_vm.vms | default([]) | length) }}"
+  tags:
+    - controller
+
+- name: Output number of VMs to create
+  ansible.builtin.debug:
+    msg: "Creating controller VMs: {{ infrastructure_controller_vms_to_create }}"
+  tags:
+    - controller
+
+- name: Create VMs
+  when: infrastructure_controller_vms_to_create | int > 0
+  block:
+    - name: Include create vm task
+      ansible.builtin.include_tasks: vms/create.yml
+      loop: "{{ range(infrastructure_controller_vms_to_create | int) }}"
+      vars:
+        app_tag: controller
+        instance_type: "{{ (infrastructure_virtual_machines | selectattr('name', 'eq', 'controller') | first).shape }}"
+        private_host_groups:
+          - aap
+          - controller_private
+        public_host_groups:
+          - controller_public
+        subnet: "{{ infrastructure_subnet_names | select('search', 'controller') | first }}"
+      tags:
+        - controller
+
+    - name: Wait 10 mins for VMs to become available
+      ansible.builtin.wait_for:
+        host: "{{ item }}"
+        port: 22
+        timeout: 600
+      loop: "{{ groups.public }}"

@@ -6,52 +6,26 @@
     location: "{{ infrastructure_region }}"
     address_prefixes_cidr: "{{ infrastructure_vnet_cidr }}"
     tags: "{{ _infrastructure_tags }}"
-  register: result
-  tags:
-    - network
-    - database
-
-- name: Assign the result to variable for later usage
-  ansible.builtin.set_fact:
-    network: "{{ result.state }}"
-  tags:
-    - network
-    - database
+  register: infrastructure_network
 
 - name: Create subnets
   azure.azcollection.azure_rm_subnet:
     resource_group: "{{ resource_group }}"
     name: "subnet-{{ deployment_id }}-{{ item.name }}"
     address_prefix: "{{ item.cidr }}"
-    virtual_network: "{{ network.name }}"
+    virtual_network: "{{ infrastructure_network.state.name }}"
     delegations: "{{ item.delegations | default(omit) }}"
-  loop: "{{ infrastructure_vnet_subnets }}"
-  register: aap_networking
-  tags:
-    - network
-    - database
+  register: infrastructure_subnets
 
-- name: Create public IP addresses for systems
-  azure.azcollection.azure_rm_publicipaddress:
-    resource_group: "{{ resource_group }}"
-    allocation_method: Static
-    name: "pip-{{ deployment_id }}-{{ item.name }}"
-    location: "{{ infrastructure_region }}"
-    tags: "{{ _infrastructure_tags }}"
-  loop: "{{ infrastructure_virtual_machines }}"
-  when: item.instances > 0
-  register: public_ip_addresses
-  tags:
-    - network
+- name: Save subnet ids
+  ansible.builtin.set_fact:
+    infrastructure_subnet_names: "{{ infrastructure_subnets.results | map(attribute='state.name') | list }}"
 
 - name: Create private dns zone for postgresql
   azure.azcollection.azure_rm_privatednszone:
     resource_group: "{{ resource_group }}"
     name: "aap.postgres.database.azure.com"
-  register: private_zone
-  tags:
-    - network
-    - database
+  register: infrastructure_private_zone
 
 - name: Create Network Security Group that allows SSH and RDP
   azure.azcollection.azure_rm_securitygroup:
@@ -72,30 +46,4 @@
         priority: 100
         direction: Inbound
     tags: "{{ _infrastructure_tags }}"
-  register: result
-  tags:
-    - network
-
-- name: Assign result to variable for later usage
-  ansible.builtin.set_fact:
-    nsg: "{{ result.state }}"
-  tags:
-    - network
-
-- name: Create virtual network interface card
-  azure.azcollection.azure_rm_networkinterface:
-    resource_group: "{{ resource_group }}"
-    name: "nic-{{ deployment_id }}-{{ item.name }}"
-    virtual_network: "{{ network.id }}"
-    subnet: "subnet-{{ deployment_id }}-{{ item.subnet }}"
-    public_ip_name: "pip-{{ deployment_id }}-{{ item.name }}"
-    security_group: "{{ nsg.name }}"
-    location: "{{ infrastructure_region }}"
-    ip_configurations:
-      - name: "pip-{{ deployment_id }}-{{ item.name }}"
-        public_ip_address_name: "pip-{{ deployment_id }}-{{ item.name }}"
-    tags: "{{ _infrastructure_tags }}"
-  loop: "{{ infrastructure_virtual_machines }}"
-  when: item.instances > 0
-  tags:
-    - network
+  register: infrastructure_nsg
