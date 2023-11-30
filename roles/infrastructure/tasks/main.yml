@@ -37,6 +37,26 @@
 - name: Create controller VMs
   ansible.builtin.include_tasks: controller.yml
 
+- name: Remote tasks
+  delegate_to: "{{ groups.installer[0] }}"
+  connection: ssh
+  block:
+    - name: Copy an SSH private key to the installer host to connect to other servers
+      ansible.builtin.copy:
+        remote_src: false
+        src: "{{ lookup('env', 'HOME') + '/.ssh/' + infrastructure_keypair_name }}"
+        dest: /home/azureuser/.ssh/{{ infrastructure_keypair_name }}
+        owner: azureuser
+        group: azureuser
+        mode: '0600'
+        force: true
+
+    - name: Copy ssh config to make calling the AAP installer from this role possible
+      ansible.builtin.template:
+        src: config.j2
+        dest: /home/azureuser/.ssh/config
+        mode: '0644'
+
 - name: Create Execution Node VMs
   ansible.builtin.include_tasks: execution.yml
 
