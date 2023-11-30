@@ -22,7 +22,9 @@ There are variables that can be used to skip or prevent steps by setting variabl
 | Create a network security group | Creates a security group that allows AAP ports within the VNET and HTTPS and automation mesh ports externally. |
 | Create a database server | Creates a PostgreSQL Flexible Server and the necessary databases inside of it for the controller, hub, and Event-Driven Ansible components. |
 | Create the controller VMs | Creates VMs for controller, a public IP, and the virtual network interface card with the public IP attached. |
+| Create the execution nodes VMs | Creates VMs for execution nodes (if enabled), a public IP, and the virtual network interface card with the public IP attached. |
 | Create the hub VMs | Creates VMs for private automation hub, a public IP, and the virtual network interface card with the public IP attached. |
+| Create the eda VMs | Creates VMs for eda (if enabled), a public IP, and the virtual network interface card with the public IP attached. |
 | Register the VMs with Red Hat | Uses RHEL subscription manager to register each virtual machine for required RPM repos. |
 | Update the VMs | Updates each VM deployed with latest kernel and packages. |
 | Setup one controller VM as the installer | Configures the installer VMs with a private SSH key so that it can communicate with the other VMs that are part of the installation process and configures the installer inventory file based on the VMs that were created as part of this process. |

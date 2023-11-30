@@ -37,11 +37,11 @@
 - name: Create controller VMs
   ansible.builtin.include_tasks: controller.yml
 
-# - name: Create Execution Node VMs
-#   ansible.builtin.include_tasks: execution.yml
+- name: Create Execution Node VMs
+  ansible.builtin.include_tasks: execution.yml
 
 - name: Create hub VMs
   ansible.builtin.include_tasks: hub.yml
 
-# - name: Create EDA VMs
-#   ansible.builtin.include_tasks: eda.yml
+- name: Create EDA VMs
+  ansible.builtin.include_tasks: eda.yml
