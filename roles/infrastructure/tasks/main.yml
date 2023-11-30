@@ -45,3 +45,10 @@
 
 - name: Create EDA VMs
   ansible.builtin.include_tasks: eda.yml
+
+- name: Wait 10 mins for all VMs to become available
+  ansible.builtin.wait_for:
+    host: "{{ item }}"
+    port: 22
+    timeout: 600
+  loop: "{{ groups.public }}"

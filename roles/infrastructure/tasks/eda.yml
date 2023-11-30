@@ -29,25 +29,15 @@
   ansible.builtin.debug:
     msg: "Creating eda VMs: {{ infrastructure_eda_vms_to_create }}"
 
-- name: Create VMs
-  when: infrastructure_eda_vms_to_create | int > 0
-  block:
-    - name: Include create vm task
-      ansible.builtin.include_tasks: vms/create.yml
-      loop: "{{ range(infrastructure_eda_vms_to_create | int) }}"
-      vars:
-        app_tag: eda
-        instance_type: "{{ (infrastructure_virtual_machines | selectattr('name', 'eq', 'eda') | first).shape }}"
-        private_host_groups:
-          - aap
-          - eda_private
-        public_host_groups:
-          - eda_public
-        subnet: "{{ infrastructure_subnet_names | select('search', 'eda') | first }}"
-
-    - name: Wait 10 mins for VMs to become available
-      ansible.builtin.wait_for:
-        host: "{{ item }}"
-        port: 22
-        timeout: 600
-      loop: "{{ groups.public }}"
+- name: Include create vm task
+  ansible.builtin.include_tasks: vms/create.yml
+  loop: "{{ range(infrastructure_eda_vms_to_create | int) }}"
+  vars:
+    app_tag: eda
+    instance_type: "{{ (infrastructure_virtual_machines | selectattr('name', 'eq', 'eda') | first).shape }}"
+    private_host_groups:
+      - aap
+      - eda_private
+    public_host_groups:
+      - eda_public
+    subnet: "{{ infrastructure_subnet_names | select('search', 'eda') | first }}"
