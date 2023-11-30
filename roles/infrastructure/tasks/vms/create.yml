@@ -2,26 +2,14 @@
 - name: Create VM facts
   ansible.builtin.set_fact:
     infrastructure_vm_deployment_id: "{{ query('community.general.random_string', upper=false, numbers=false, special=false) | first }}"
-  tags:
-    - controller
-    - hub
-    - eda
 
 - name: Create VM facts
   ansible.builtin.set_fact:
     infrastructure_vm_name: "vm-{{ deployment_id }}-{{ app_tag }}-{{ infrastructure_vm_deployment_id }}"
-  tags:
-    - controller
-    - hub
-    - eda
 
 - name: Debug VM name
   ansible.builtin.debug:
     var: infrastructure_vm_name
-  tags:
-    - controller
-    - hub
-    - eda
 
 - name: Create public IP address
   azure.azcollection.azure_rm_publicipaddress:
@@ -31,10 +19,6 @@
     location: "{{ infrastructure_region }}"
     tags: "{{ _infrastructure_tags }}"
   register: infrastructure_pip
-  tags:
-    - controller
-    - hub
-    - eda
 
 - name: Create virtual network interface card
   azure.azcollection.azure_rm_networkinterface:
@@ -50,10 +34,6 @@
         public_ip_address_name: "{{ infrastructure_pip.state.name }}"
     tags: "{{ _infrastructure_tags }}"
   register: infrastructure_nic
-  tags:
-    - controller
-    - hub
-    - eda
 
 - name: Create virtual machines
   vars:
@@ -75,30 +55,18 @@
     location: "{{ infrastructure_region }}"
     tags: "{{ vm_tags }}"
   register: infrastructure_vm
-  tags:
-    - controller
-    - hub
-    - eda
 
 - name: Output the IP of new VM
   ansible.builtin.debug:
     msg:
       - "Public IP for {{ infrastructure_vm_name }}: {{ infrastructure_pip.state.ip_address }}"
       - "Private IP for {{ infrastructure_vm_name }}: {{ infrastructure_nic.state.ip_configuration.private_ip_address }}"
-  tags:
-    - controller
-    - hub
-    - eda
 
 - name: Set stats for new VM
   ansible.builtin.set_stats:
     data:
       "{{ infrastructure_vm_name | replace('-','_') }}_public_ip": "{{ infrastructure_pip.state.ip_address }}"
       "{{ infrastructure_vm_name | replace('-','_') }}_priv_network_private_ip": "{{ infrastructure_nic.state.ip_configuration.private_ip_address }}"
-  tags:
-    - controller
-    - hub
-    - eda
 
 - name: Add public IP host to installer
   when: groups.installer is not defined
@@ -106,25 +74,13 @@
     groups:
       - installer
     name: "{{ infrastructure_pip.state.ip_address }}"
-  tags:
-    - controller
-    - hub
-    - eda
 
 - name: Add public IP hosts to group
   ansible.builtin.add_host:
     groups: "{{ public_host_groups + ['public'] | default(['public']) }}"
     name: "{{ infrastructure_pip.state.ip_address }}"
-  tags:
-    - controller
-    - hub
-    - eda
 
 - name: Add private IPs hosts to group
   ansible.builtin.add_host:
     groups: "{{ private_host_groups + ['private'] | default(['private']) }}"
     name: "{{ infrastructure_nic.state.ip_configuration.private_ip_address }}"
-  tags:
-    - controller
-    - hub
-    - eda

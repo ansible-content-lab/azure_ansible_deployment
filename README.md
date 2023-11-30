@@ -4,6 +4,8 @@ This is a collection that will deploy Red Hat Ansible Automation Platform on Mic
 While this collection will work with any Ansible deployment on Azure, this is intended to be a starting point for customers that purchase Ansible Automation Platform subscriptions from the Azure marketplace.
 Take this collection and enhance/improve/update based on the resources that you need for your AAP deployment.
 
+**NOTE :** It is assumed that only one dedicated resource group will be made, used, and deleted by the playbooks and roles in this repository.
+
 ## Introduction
 
 This collection performs the following actions in the order listed.
@@ -11,16 +13,19 @@ There are variables that can be used to skip or prevent steps by setting variabl
 
 | Step | Description |
 | ---- | ----------- |
-| Create a Deployment ID | Creates a random string that will be used in tagging for correlating the resources used with a deployment of AAP. |
+| Create a deployment ID | Creates a random string that will be used in tagging for correlating the resources used with a deployment of AAP. |
+| Merge tags | Merges customer provided tags with the default ones. |
 | Create a resource group | Creates a resource group to contain all of the related resources for the AAP installation. |
-| Create a Virtual Network | Creates a virtual network with a CIDR block that can contain the subnets that will be created. |
-| Create Subnets | Creates the subnets for automation controller, execution environments, private automation hub, and Event-Driven Ansible. |
-| Create Public IPs | Creates public IPs so that the VMs have access to the internet. |
-| Create Private DNS Zone | Creates the private DNS zone for PostgreSQL. |
-| Create a Network Security Group | Creates a security group that allows AAP ports within the VNET, and HTTPS and automation mesh ports externally. |
-| Create a Database server | Creates a PostgreSQL Flexible Server and the necessary databases inside of it for the Controller, Hub or Event-Driven Ansible components. |
-| Create Controller VMs | Creates VMs for Controller, a public IP and the virtual network interface card with the public IP attached. |
-| Create Hub VMs | Creates VMs for Private Automation Hub, a public IP and the virtual network interface card with the public IP attached. |
+| Create a virtual network | Creates a virtual network with a CIDR block that can contain the subnets that will be created. |
+| Create subnets | Creates the subnets for automation controller, execution environments, private automation hub, and Event-Driven Ansible. |
+| Create the private DNS zone | Creates the private DNS zone for PostgreSQL. |
+| Create a network security group | Creates a security group that allows AAP ports within the VNET and HTTPS and automation mesh ports externally. |
+| Create a database server | Creates a PostgreSQL Flexible Server and the necessary databases inside of it for the controller, hub, and Event-Driven Ansible components. |
+| Create the controller VMs | Creates VMs for controller, a public IP, and the virtual network interface card with the public IP attached. |
+| Create the hub VMs | Creates VMs for private automation hub, a public IP, and the virtual network interface card with the public IP attached. |
+| Register the VMs with Red Hat | Uses RHEL subscription manager to register each virtual machine for required RPM repos. |
+| Update the VMs | Updates each VM deployed with latest kernel and packages. |
+| Setup one controller VM as the installer | Configures the installer VMs with a private SSH key so that it can communicate with the other VMs that are part of the installation process and configures the installer inventory file based on the VMs that were created as part of this process. |
 
 ## Getting Started
 
@@ -36,17 +41,6 @@ ansible-galaxy collection install git+https://github.com/ansible-content-lab/azu
 ```
 
 You may also download the collection from GitHub and modify to suit your needs.
-
-### Local Ansible Configuration
-
-You should also ensure that the `ansible.cfg` file on the machine where you will run the deployment playbook is configured to keep the SSH connection to the VM alive since the AAP installer process takes about 30 mins to run.
-This collection includes an example `ansible.cfg` file, but your local Ansible deployment may use a different file.
-Add the following to your file to ensure that waiting for the installer does not cause this collection to time out.
-
-```ini
-[ssh_connection]
-ssh_args = -o ServerAliveInterval=30
-```
 
 ### Roles
 
@@ -78,30 +72,39 @@ This section will walk through deploying the Azure infrastructure and Ansible Au
 ### Checklist
 
 - [ ] Install this collection (or download and modify)
-- [ ] Ensure that `ansible.cfg` is updated to keep SSH connections alive.
 - [ ] Ansible CLI tools installed locally (`ansible`)
 - [ ] Configure the Azure environment variables for authentication
+- [ ] Ensure you don't have anything else in the resource group that you use (default of specified via an extra var)
 
 ### Running the Playbook
 
-These 4 variables below are required for running the Playbook
+The variables below are required for running the playbook
 
-- aap_red_hat_username (This is your Red Hat account name that will be used for Subscription Management)
-- aap_red_hat_password (The Red Hat account password)
-- infrastructure_database_server_user (Username that will be the admin of the new Database server)
-- infrastructure_database_server_password (Password of the admin username)
+| Variable | Description |
+| -------- | ----------- |
+| `aap_red_hat_username` | This is your Red Hat account name that will be used for Subscription Management. |
+| `aap_red_hat_password` | The Red Hat account password. |
+| `infrastructure_database_server_user` | Username that will be the admin of the new database server. |
+| `infrastructure_database_server_password` | Password of the admin of the new database server. |
 
 Assuming that all variables are configured properly and your Azure account has permissions to deploy the resources defined in this collection, then running the playbook should be a single task. For example:
 
 ```bash
-ansible-playbook lab.azure_deployment.deploy_aap --extra-vars "aap_red_hat_username=example_user aap_red_hat_password=example_pass infrastructure_database_server_user=example_user infrastructure_database_server_password=example_password"
+ansible-playbook lab.azure_deployment.deploy_infrastructure --extra-vars "aap_red_hat_username=$RED_HAT_ACCOUNT aap_red_hat_password=$RED_HAT_PASSWORD infrastructure_database_server_user=example_user infrastructure_database_server_password=example_password"
 ```
 
 ## Uninstall
 
-The `playbooks/destroy_aap.yml` playbook will remove RHEL subscription entitlements and deprovision the infrastructure that has been associated with a deployment id.
-This will permanently remove all data, so only run this playbook if you are sure that you want to delete all traces of the deployment.
+The `destroy_infrastructure` playbook will remove RHEL subscription entitlements and deprovision the infrastructure that has been deployed in the given resource group.
+This will permanently remove all data and infrastructure in the resource group, so only run this playbook if you are sure that you want to delete all traces of the deployment.
+
+The variables below are required for running the playbook
+
+| Variable | Description |
+| -------- | ----------- |
+| `aap_red_hat_username` | This is your Red Hat account name that will be used for Subscription Management. |
+| `aap_red_hat_password` | The Red Hat account password. |
 
 ```bash
-ansible-playbook lab.azure_deployment.destroy_aap
+ansible-playbook lab.azure_deployment.destroy_infrastructure --extra-vars "aap_red_hat_username=$RED_HAT_ACCOUNT aap_red_hat_password=$RED_HAT_PASSWORD"
 ```
