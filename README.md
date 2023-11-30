@@ -24,7 +24,7 @@ There are variables that can be used to skip or prevent steps by setting variabl
 | Create the controller VMs | Creates VMs for controller, a public IP, and the virtual network interface card with the public IP attached. |
 | Create the execution nodes VMs | Creates VMs for execution nodes (if enabled), a public IP, and the virtual network interface card with the public IP attached. |
 | Create the hub VMs | Creates VMs for private automation hub, a public IP, and the virtual network interface card with the public IP attached. |
-| Create the eda VMs | Creates VMs for eda (if enabled), a public IP, and the virtual network interface card with the public IP attached. |
+| Create the eda VMs | Creates VMs for event-driven ansible (if enabled), a public IP, and the virtual network interface card with the public IP attached. |
 | Register the VMs with Red Hat | Uses RHEL subscription manager to register each virtual machine for required RPM repos. |
 | Update the VMs | Updates each VM deployed with latest kernel and packages. |
 | Setup one controller VM as the installer | Configures the installer VMs with a private SSH key so that it can communicate with the other VMs that are part of the installation process and configures the installer inventory file based on the VMs that were created as part of this process. |
