@@ -9,17 +9,6 @@
     public_host_groups:
       - execution_public
 
-- name: Add public IP host to installer
-  ansible.builtin.add_host:
-    groups:
-      - installer
-    name: "{{ infrastructure_running_virtual_machine_public_ip.results[0].publicipaddresses[0].ip_address }}"
-  when:
-    - infrastructure_running_virtual_machine_public_ip is defined
-    - infrastructure_running_virtual_machine_public_ip.results | length > 0
-    - (groups.installer is not defined or groups.installer | length == 0)
-  changed_when: false
-
 - name: Set number of execution node VMs to create
   ansible.builtin.set_fact:
     infrastructure_execution_vms_to_create: "{{ (infrastructure_virtual_machines | selectattr('name', 'eq', 'execution') | first).instances -
