@@ -1,0 +1,4 @@
+Host {{ groups.controller_private | join(' ') }} {{ groups.execution_private | default('') | join(' ') }} {{ groups.hub_private | default('') | join(' ') }} {{ groups.eda_private | default('') | join(' ') }}
+    User azureuser
+    IdentityFile /home/azureuser/.ssh/{{ infrastructure_keypair_name }}
+    StrictHostKeyChecking no
