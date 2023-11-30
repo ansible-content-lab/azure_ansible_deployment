@@ -72,3 +72,18 @@
     port: 22
     timeout: 600
   loop: "{{ groups.public }}"
+
+- name: Prepare AAP install
+  hosts: installer
+  gather_facts: false
+  become: false
+  vars:
+    aap_controller_hosts: "{{ groups.controller_private }}"
+    aap_ee_hosts: "{{ groups.execution_private | default('') }}"
+    aap_hub_hosts: "{{ groups.hub_private | default('') }}"
+    aap_eda_hosts: "{{ groups.eda_private | default('') }}"
+    aap_eda_allowed_hostnames: "{{ (groups.eda_public | default([])) | join(',') }}"
+    aap_db_host: "{{ hostvars.localhost.result.response[0].properties.fullyQualifiedDomainName }}"
+  block:
+    - name: Create installer
+      ansible.builtin.include_tasks: create_inventory.yml

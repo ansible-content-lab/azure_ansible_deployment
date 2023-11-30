@@ -4,8 +4,14 @@
 [automationcontroller:vars]
 peers=execution_nodes
 
+[execution_nodes]
+{{ aap_ee_hosts | join('\n') }}
+
 [automationhub]
 {{ aap_hub_hosts | join('\n') }}
+
+[automationedacontroller]
+{{ aap_eda_hosts | join('\n') }}
 
 [database]
 
@@ -13,10 +19,13 @@ peers=execution_nodes
 admin_password='{{ aap_admin_password }}'
 
 pg_host='{{ aap_db_host }}'
+pg_port=5432
 pg_database='controller'
 pg_username='{{ infrastructure_database_server_user }}'
 pg_password='{{ infrastructure_database_server_password }}'
 pg_sslmode='prefer'
+
+install_pg_port=5432
 
 registry_url='registry.redhat.io'
 registry_username='{{ aap_red_hat_username }}'
@@ -28,6 +37,7 @@ receptor_listener_port=27199
 automationhub_admin_password='{{ aap_admin_password }}'
 
 automationhub_pg_host='{{ aap_db_host }}'
+automationhub_pg_port=5432
 automationhub_pg_database='hub'
 automationhub_pg_username='{{ infrastructure_database_server_user }}'
 automationhub_pg_password='{{ infrastructure_database_server_password }}'
@@ -35,7 +45,10 @@ automationhub_pg_sslmode='prefer'
 
 automationedacontroller_admin_password='{{ aap_admin_password }}'
 
+automationedacontroller_allowed_hostnames='{{ aap_eda_allowed_hostnames }}'
+
 automationedacontroller_pg_host='{{ aap_db_host }}'
+automationedacontroller_pg_port=5432
 automationedacontroller_pg_database='eda'
 automationedacontroller_pg_username='{{ infrastructure_database_server_user }}'
 automationedacontroller_pg_password='{{ infrastructure_database_server_password }}'

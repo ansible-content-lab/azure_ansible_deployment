@@ -1,6 +1,6 @@
 ---
 # Infrastructure Defaults
-infrastructure_region: eastus
+infrastructure_region: eastus2
 infrastructure_tags: []
 
 # Networking
@@ -51,11 +51,15 @@ infrastructure_virtual_machines:
 infrastructure_admin_username: azureuser
 infrastructure_password_enabled: false
 
+# infrastructure_image_plan:
+#   offer: RHEL
+#   publisher: RedHat
+#   sku: "9-lvm-gen2"
+#   version: aap-installer-1
+
 infrastructure_image_plan:
-  offer: RHEL
-  publisher: RedHat
-  sku: "9-lvm-gen2"
-  version: latest
+  name: aap-installer-1
+  resource_group: luiz-group
 
 infrastructure_keypair_name: id_rsa
 infrastructure_ssh_public_keys:
@@ -64,3 +68,6 @@ infrastructure_ssh_public_keys:
 
 infrastructure_managed_disk_type: Premium_LRS
 infrastructure_os_disk_size_gb: 100
+
+aap_installer_inventory_path: "/home/azureuser/inventory"
+aap_admin_password: "abcde"
