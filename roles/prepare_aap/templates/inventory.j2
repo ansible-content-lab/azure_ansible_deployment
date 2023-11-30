@@ -1,0 +1,44 @@
+[automationcontroller]
+{{ aap_controller_hosts | join('\n') }}
+
+[automationcontroller:vars]
+peers=execution_nodes
+
+[automationhub]
+{{ aap_hub_hosts | join('\n') }}
+
+[database]
+
+[all:vars]
+admin_password='{{ aap_admin_password }}'
+
+pg_host='{{ aap_db_host }}'
+pg_database='controller'
+pg_username='{{ infrastructure_database_server_user }}'
+pg_password='{{ infrastructure_database_server_password }}'
+pg_sslmode='prefer'
+
+registry_url='registry.redhat.io'
+registry_username='{{ aap_red_hat_username }}'
+registry_password='{{ aap_red_hat_password }}'
+# ee_from_hub_only =
+
+receptor_listener_port=27199
+
+automationhub_admin_password='{{ aap_admin_password }}'
+
+automationhub_pg_host='{{ aap_db_host }}'
+automationhub_pg_database='hub'
+automationhub_pg_username='{{ infrastructure_database_server_user }}'
+automationhub_pg_password='{{ infrastructure_database_server_password }}'
+automationhub_pg_sslmode='prefer'
+
+automationedacontroller_admin_password='{{ aap_admin_password }}'
+
+automationedacontroller_pg_host='{{ aap_db_host }}'
+automationedacontroller_pg_database='eda'
+automationedacontroller_pg_username='{{ infrastructure_database_server_user }}'
+automationedacontroller_pg_password='{{ infrastructure_database_server_password }}'
+automationedacontroller_pg_sslmode='prefer'
+
+enable_insights_collection = False

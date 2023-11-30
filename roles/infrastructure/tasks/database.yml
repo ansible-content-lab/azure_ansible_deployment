@@ -14,6 +14,8 @@
     resource_type: flexibleServers
     api_version: "2022-12-01"
     body: "{{ lookup('template', 'database_config.j2') }}"
+  tags:
+    - database
 
 - name: Wait for PostgreSQL Flexible Server to finish provisioning
   azure.azcollection.azure_rm_resource_info:
