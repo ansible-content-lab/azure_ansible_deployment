@@ -1,5 +1,0 @@
----
-
-- name: Create inventory
-  ansible.builtin.import_tasks: create_inventory.yml
-
