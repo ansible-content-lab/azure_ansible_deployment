@@ -1,6 +1,6 @@
 ---
 # Infrastructure Defaults
-infrastructure_region: eastus2
+infrastructure_region: eastus
 infrastructure_tags: []
 
 # Networking
@@ -51,15 +51,15 @@ infrastructure_virtual_machines:
 infrastructure_admin_username: "{{ ansible_ssh_user }}"
 infrastructure_password_enabled: false
 
-# infrastructure_image_plan:
-#   offer: RHEL
-#   publisher: RedHat
-#   sku: "9-lvm-gen2"
-#   version: aap-installer-1
-
 infrastructure_image_plan:
-  name: aap-installer-1
-  resource_group: luiz-group
+  offer: RHEL
+  publisher: RedHat
+  sku: "9-lvm-gen2"
+  version: latest
+
+# infrastructure_image_plan:
+#   name: aap-installer-1701371407.vhd
+#   resource_group: luiz-group
 
 # infrastructure_image_plan:
 #   name: aap-installer-1701371407.vhd
