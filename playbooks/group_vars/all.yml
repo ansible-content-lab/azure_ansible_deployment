@@ -1,2 +1,2 @@
 ansible_ssh_user: azureuser
-resource_group: leena2-group
+resource_group: aap_on_azure

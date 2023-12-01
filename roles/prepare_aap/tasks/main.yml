@@ -5,7 +5,9 @@
       - aap_admin_password is defined
     msg: Required variables for the AAP inventory are not set
 
-- name: Copy inventory locally
+- name: Copy inventory to install server
   ansible.builtin.template:
     src: inventory.j2
     dest: "{{ aap_installer_inventory_path }}"
+
+
