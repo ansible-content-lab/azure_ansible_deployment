@@ -40,18 +40,3 @@
       ansible.builtin.reboot:
       when: reboot.rc != 0
 
-- name: Prepare AAP install
-  hosts: installer
-  gather_facts: false
-  become: false
-  vars:
-    aap_controller_hosts: "{{ groups.controller_private }}"
-    aap_ee_hosts: "{{ groups.execution_private | default('') }}"
-    aap_hub_hosts: "{{ groups.hub_private | default('') }}"
-    aap_eda_hosts: "{{ groups.eda_private | default('') }}"
-    aap_eda_allowed_hostnames: "{{ (groups.eda_public | default([])) | join(',') }}"
-    aap_db_host: "{{ hostvars.localhost.result.response[0].properties.fullyQualifiedDomainName }}"
-  tasks:
-    - name: Create inventory
-      ansible.builtin.include_role:
-        name: lab.azure_deployment.prepare_aap
