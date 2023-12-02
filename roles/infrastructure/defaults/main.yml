@@ -68,3 +68,6 @@ infrastructure_ssh_public_keys:
 
 infrastructure_managed_disk_type: Premium_LRS
 infrastructure_os_disk_size_gb: 100
+
+aap_installer_inventory_path: "/home/azureuser/inventory"
+aap_admin_password: "abcde"
