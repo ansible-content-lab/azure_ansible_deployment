@@ -45,16 +45,16 @@
       ansible.builtin.copy:
         remote_src: false
         src: "{{ lookup('env', 'HOME') + '/.ssh/' + infrastructure_keypair_name }}"
-        dest: /home/azureuser/.ssh/{{ infrastructure_keypair_name }}
-        owner: azureuser
-        group: azureuser
+        dest: /home/{{ ansible_ssh_user }}/.ssh/{{ infrastructure_keypair_name }}
+        owner: "{{ ansible_ssh_user }}"
+        group: "{{ ansible_ssh_user }}"
         mode: '0600'
         force: true
 
     - name: Copy ssh config to make calling the AAP installer from this role possible
       ansible.builtin.template:
         src: config.j2
-        dest: /home/azureuser/.ssh/config
+        dest: /home/{{ ansible_ssh_user }}/.ssh/config
         mode: '0644'
 
 - name: Create Execution Node VMs
