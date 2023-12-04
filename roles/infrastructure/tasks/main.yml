@@ -10,6 +10,8 @@
       - infrastructure_database_server_user | length > 0
       - infrastructure_database_server_password is defined
       - infrastructure_database_server_password | length > 0
+      - aap_admin_password is defined
+      - aap_admin_password | length > 0
 
 - name: Check AAP controller configuration
   ansible.builtin.assert:
@@ -73,7 +75,7 @@
     timeout: 600
   loop: "{{ groups.public }}"
 
-- name: Prepare AAP install
+- name: Prepare AAP install - copy inventory to install server
   delegate_to: "{{ groups.installer[0] }}"
   connection: ssh
   vars:
@@ -83,14 +85,6 @@
     aap_eda_hosts: "{{ groups.eda_private | default('') }}"
     aap_eda_allowed_hostnames: "{{ (groups.eda_public | default([])) | join(',') }}"
     aap_db_host: "{{ hostvars.localhost.result.response[0].properties.fullyQualifiedDomainName }}"
-  block:
-    - name: Verify required variables are set
-      ansible.builtin.assert:
-        that:
-          - aap_admin_password is defined
-        msg: Required variables for the AAP inventory are not set
-
-    - name: Copy inventory to install server
-      ansible.builtin.template:
-        src: inventory.j2
-        dest: "{{ aap_installer_inventory_path }}"
+  ansible.builtin.template:
+    src: inventory.j2
+    dest: "{{ aap_installer_inventory_path }}"

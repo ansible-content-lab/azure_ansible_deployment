@@ -61,10 +61,6 @@ infrastructure_image_plan:
 #   name: aap-installer-1701371407.vhd
 #   resource_group: luiz-group
 
-# infrastructure_image_plan:
-#   name: aap-installer-1701371407.vhd
-#   resource_group: luiz-group
-
 infrastructure_keypair_name: id_rsa
 infrastructure_ssh_public_keys:
   - path: "/home/{{ ansible_ssh_user }}/.ssh/authorized_keys"
