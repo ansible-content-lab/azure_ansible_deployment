@@ -88,6 +88,7 @@ The variables below are required for running the playbook
 | `aap_red_hat_password` | The Red Hat account password. |
 | `infrastructure_database_server_user` | Username that will be the admin of the new database server. |
 | `infrastructure_database_server_password` | Password of the admin of the new database server. |
+| `aap_admin_password` | The admin password to create for Ansible Automation Platform application. |                      
 
 Assuming that all variables are configured properly and your Azure account has permissions to deploy the resources defined in this collection, then running the playbook should be a single task. For example:
 

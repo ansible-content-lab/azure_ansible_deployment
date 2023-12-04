@@ -72,3 +72,25 @@
     port: 22
     timeout: 600
   loop: "{{ groups.public }}"
+
+- name: Prepare AAP install
+  delegate_to: "{{ groups.installer[0] }}"
+  connection: ssh
+  vars:
+    aap_controller_hosts: "{{ groups.controller_private }}"
+    aap_ee_hosts: "{{ groups.execution_private | default('') }}"
+    aap_hub_hosts: "{{ groups.hub_private | default('') }}"
+    aap_eda_hosts: "{{ groups.eda_private | default('') }}"
+    aap_eda_allowed_hostnames: "{{ (groups.eda_public | default([])) | join(',') }}"
+    aap_db_host: "{{ hostvars.localhost.result.response[0].properties.fullyQualifiedDomainName }}"
+  block:
+    - name: Verify required variables are set
+      ansible.builtin.assert:
+        that:
+          - aap_admin_password is defined
+        msg: Required variables for the AAP inventory are not set
+
+    - name: Copy inventory to install server
+      ansible.builtin.template:
+        src: inventory.j2
+        dest: "{{ aap_installer_inventory_path }}"
