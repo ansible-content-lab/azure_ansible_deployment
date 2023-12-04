@@ -39,4 +39,3 @@
     - name: Reboot if there were kernel changes
       ansible.builtin.reboot:
       when: reboot.rc != 0
-
