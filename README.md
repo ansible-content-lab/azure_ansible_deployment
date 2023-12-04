@@ -35,7 +35,7 @@ These sections will describe required or recommended steps so that your Ansible 
 
 ### This Collection
 
-If you do not intend to make changes to the collection, then you can install directly from the `ansible-galaxy` CLI tool.
+Install the collection directly from the `ansible-galaxy` CLI tool.
 Examples in this readme will assume that you have done this.
 
 ```bash
@@ -84,16 +84,17 @@ The variables below are required for running the playbook
 
 | Variable | Description |
 | -------- | ----------- |
-| `aap_red_hat_username` | This is your Red Hat account name that will be used for Subscription Management. |
+| `aap_red_hat_username` | This is your Red Hat account name that will be used for Subscription Management (https://access.redhat.com/management). |
 | `aap_red_hat_password` | The Red Hat account password. |
 | `infrastructure_database_server_user` | Username that will be the admin of the new database server. |
 | `infrastructure_database_server_password` | Password of the admin of the new database server. |
-| `aap_admin_password` | The admin password to create for Ansible Automation Platform application. |                      
+| `aap_admin_password` | The admin password to create for Ansible Automation Platform application. |
 
 Assuming that all variables are configured properly and your Azure account has permissions to deploy the resources defined in this collection, then running the playbook should be a single task. For example:
 
 ```bash
-ansible-playbook lab.azure_deployment.deploy_infrastructure --extra-vars "aap_red_hat_username=$RED_HAT_ACCOUNT aap_red_hat_password=$RED_HAT_PASSWORD infrastructure_database_server_user=example_user infrastructure_database_server_password=example_password"
+ansible-playbook lab.azure_deployment.deploy_infrastructure --extra-vars "aap_red_hat_username=$RED_HAT_ACCOUNT aap_red_hat_password=$RED_HAT_PASSWORD infrastructure_database_server_user=example_user infrastructure_database_server_password=example_database_server_password"
+aap_admin_password=example_aap_admin_password
 ```
 
 ## Uninstall
@@ -105,7 +106,7 @@ The variables below are required for running the playbook
 
 | Variable | Description |
 | -------- | ----------- |
-| `aap_red_hat_username` | This is your Red Hat account name that will be used for Subscription Management. |
+| `aap_red_hat_username` | This is your Red Hat account name that will be used for Subscription Management (https://access.redhat.com/management). |
 | `aap_red_hat_password` | The Red Hat account password. |
 
 ```bash
