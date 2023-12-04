@@ -84,7 +84,6 @@ The variables below are required for running the playbook
 
 | Variable | Description |
 | -------- | ----------- |
-| `infrastructure_region` | The Azure location where the infrastructure will be deployed. |
 | `aap_red_hat_username` | This is your Red Hat account name that will be used for Subscription Management. |
 | `aap_red_hat_password` | The Red Hat account password. |
 | `infrastructure_database_server_user` | Username that will be the admin of the new database server. |
