@@ -39,6 +39,15 @@
 - name: Create controller VMs
   ansible.builtin.include_tasks: controller.yml
 
+- name: Create Execution Node VMs
+  ansible.builtin.include_tasks: execution.yml
+
+- name: Create hub VMs
+  ansible.builtin.include_tasks: hub.yml
+
+- name: Create EDA VMs
+  ansible.builtin.include_tasks: eda.yml
+
 - name: Remote tasks
   delegate_to: "{{ groups.installer[0] }}"
   connection: ssh
@@ -51,7 +60,6 @@
         owner: "{{ ansible_ssh_user }}"
         group: "{{ ansible_ssh_user }}"
         mode: '0600'
-        force: true
 
     - name: Copy ssh config to make calling the AAP installer from this role possible
       ansible.builtin.template:
@@ -59,14 +67,19 @@
         dest: /home/{{ ansible_ssh_user }}/.ssh/config
         mode: '0644'
 
-- name: Create Execution Node VMs
-  ansible.builtin.include_tasks: execution.yml
-
-- name: Create hub VMs
-  ansible.builtin.include_tasks: hub.yml
-
-- name: Create EDA VMs
-  ansible.builtin.include_tasks: eda.yml
+    - name: Prepare AAP install - copy inventory to install server
+      vars:
+        aap_controller_hosts: "{{ groups.controller_private }}"
+        aap_ee_hosts: "{{ groups.execution_private | default('') }}"
+        aap_hub_hosts: "{{ groups.hub_private | default('') }}"
+        aap_eda_hosts: "{{ groups.eda_private | default('') }}"
+        aap_eda_allowed_hostnames: "{{ (groups.eda_public | default([])) | join(',') }}"
+        aap_db_host: "{{ hostvars.localhost.result.response[0].properties.fullyQualifiedDomainName }}"
+      ansible.builtin.template:
+        src: inventory.j2
+        dest: "{{ infrastructure_aap_installer_inventory_path }}"
+        mode: '0644'
+      become: true
 
 - name: Wait 10 mins for all VMs to become available
   ansible.builtin.wait_for:
@@ -74,18 +87,3 @@
     port: 22
     timeout: 600
   loop: "{{ groups.public }}"
-
-- name: Prepare AAP install - copy inventory to install server
-  delegate_to: "{{ groups.installer[0] }}"
-  connection: ssh
-  vars:
-    aap_controller_hosts: "{{ groups.controller_private }}"
-    aap_ee_hosts: "{{ groups.execution_private | default('') }}"
-    aap_hub_hosts: "{{ groups.hub_private | default('') }}"
-    aap_eda_hosts: "{{ groups.eda_private | default('') }}"
-    aap_eda_allowed_hostnames: "{{ (groups.eda_public | default([])) | join(',') }}"
-    aap_db_host: "{{ hostvars.localhost.result.response[0].properties.fullyQualifiedDomainName }}"
-  ansible.builtin.template:
-    src: inventory.j2
-    dest: "{{ infrastructure_aap_installer_inventory_path }}"
-    mode: '0644'

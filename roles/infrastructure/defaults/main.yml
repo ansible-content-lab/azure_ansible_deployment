@@ -58,7 +58,7 @@ infrastructure_image_plan:
   version: latest
 
 # infrastructure_image_plan:
-#   name: aap-installer-1701371407.vhd
+#   name: aap-installer-1701715975
 #   resource_group: luiz-group
 
 infrastructure_keypair_name: id_rsa
@@ -69,4 +69,4 @@ infrastructure_ssh_public_keys:
 infrastructure_managed_disk_type: Premium_LRS
 infrastructure_os_disk_size_gb: 100
 
-infrastructure_aap_installer_inventory_path: "/home/{{ ansible_ssh_user }}/inventory"
+infrastructure_aap_installer_inventory_path: "/opt/ansible-automation-platform/installer/inventory_azure"

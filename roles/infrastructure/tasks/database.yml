@@ -37,7 +37,7 @@
     provider: DBforPostgreSQL
     resource_type: flexibleServers
     subresource:
-      - name: awx
+      - name: controller
         type: databases
     body:
       properties:
