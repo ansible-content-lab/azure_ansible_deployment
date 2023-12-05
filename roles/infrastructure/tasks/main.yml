@@ -87,4 +87,5 @@
     aap_db_host: "{{ hostvars.localhost.result.response[0].properties.fullyQualifiedDomainName }}"
   ansible.builtin.template:
     src: inventory.j2
-    dest: "{{ aap_installer_inventory_path }}"
+    dest: "{{ infrastructure_aap_installer_inventory_path }}"
+    mode: '0644'
