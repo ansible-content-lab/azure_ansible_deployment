@@ -74,7 +74,7 @@ This section will walk through deploying the Azure infrastructure and Ansible Au
 ### Checklist
 
 - [ ] Install this collection (or download and modify)
-- [ ] Ansible CLI tools installed locally (`ansible`)  
+- [ ] Ansible CLI tools installed locally (`ansible`)
     **NOTE**: On Mac, use `pip` installed Ansible.  We have seen problems when trying to use `brew` installed Ansible.
 - [ ] Configure the Azure environment variables for authentication
 - [ ] Ensure you don't have anything else in the resource group that you use (default of specified via an extra var)
@@ -99,6 +99,19 @@ Assuming that all variables are configured properly and your Azure account has p
 ansible-playbook lab.azure_deployment.deploy_infrastructure --extra-vars "aap_red_hat_username=$RED_HAT_ACCOUNT aap_red_hat_password=$RED_HAT_PASSWORD infrastructure_database_server_user=example_user infrastructure_database_server_password=example_database_server_password
 aap_admin_password=example_aap_admin_password"
 ```
+
+### Installing Red Hat Ansible Automation Platform
+
+At this point you can ssh into one of the controller nodes and run the installer.
+We provided a sample inventory that could be used to deploy AAP.
+You might need to edit the inventory to fit your needs.
+
+```bash
+$ cd /opt/ansible-automation-platform/installer/
+$ sudo ./setup.sh -i inventory_azure
+```
+
+For more information, read the install guide from https://access.redhat.com/documentation/en-us/red_hat_ansible_automation_platform/
 
 ## Uninstall
 

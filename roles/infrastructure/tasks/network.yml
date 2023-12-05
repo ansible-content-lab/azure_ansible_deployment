@@ -26,6 +26,7 @@
   azure.azcollection.azure_rm_privatednszone:
     resource_group: "{{ resource_group }}"
     name: "aap.postgres.database.azure.com"
+    tags: "{{ _infrastructure_tags }}"
   register: infrastructure_private_zone
 
 - name: Link the private DNS zone to the network
@@ -34,6 +35,7 @@
     zone_name: "aap.postgres.database.azure.com"
     virtual_network: "{{ infrastructure_network.state.name }}"
     resource_group: "{{ resource_group }}"
+    tags: "{{ _infrastructure_tags }}"
 
 - name: Create Network Security Group that allows SSH and RDP
   azure.azcollection.azure_rm_securitygroup:
