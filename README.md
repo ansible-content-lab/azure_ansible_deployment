@@ -75,7 +75,7 @@ This section will walk through deploying the Azure infrastructure and Ansible Au
 
 - [ ] Install this collection (or download and modify)
 - [ ] Ansible CLI tools installed locally (`ansible`)  
-    *NOTE*: On Mac, use *pip* installed Ansible.  We have seen problems when trying to use *brew* installed Ansible.
+    **NOTE**: On Mac, use `pip` installed Ansible.  We have seen problems when trying to use `brew` installed Ansible.
 - [ ] Configure the Azure environment variables for authentication
 - [ ] Ensure you don't have anything else in the resource group that you use (default of specified via an extra var)
 
