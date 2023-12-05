@@ -91,6 +91,12 @@ The variables below are required for running the playbook
 | `infrastructure_database_server_password` | Password of the admin of the new database server. |
 | `aap_admin_password` | The admin password to create for Ansible Automation Platform application. |
 
+The variables below have default values but can OPTIONALLY be specified when running the playbook
+
+| Variable | Description |
+| -------- | ----------- |
+| `resource_group` | Defaults to *aap_on_azure* (playbooks/group_vars/all.yml) |
+
 Assuming that all variables are configured properly and your Azure account has permissions to deploy the resources defined in this collection, then running the playbook should be a single task. For example:
 
 ```bash
@@ -109,6 +115,13 @@ The variables below are required for running the playbook
 | -------- | ----------- |
 | `aap_red_hat_username` | This is your Red Hat account name that will be used for Subscription Management (https://access.redhat.com/management). |
 | `aap_red_hat_password` | The Red Hat account password. |
+
+The variables below have default values but can OPTIONALLY be specified when running the playbook
+
+| Variable | Description |
+| -------- | ----------- |
+| `resource_group` | Defaults to *aap_on_azure* (playbooks/group_vars/all.yml) |
+
 
 ```bash
 ansible-playbook lab.azure_deployment.destroy_infrastructure --extra-vars "aap_red_hat_username=$RED_HAT_ACCOUNT aap_red_hat_password=$RED_HAT_PASSWORD"
