@@ -52,7 +52,7 @@
   connection: local
   gather_facts: false
   tasks:
-    - name: Get resources by tag
+    - name: Get resources in the resource group
       azure.azcollection.azure_rm_resourcegroup_info:
         name: "{{ resource_group }}"
         list_resources: true
