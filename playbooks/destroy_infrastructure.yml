@@ -63,8 +63,8 @@
         target_resources: "{{ resource_group_info.resourcegroups[0].resources | selectattr('tags.deployment', 'defined') |
           selectattr('tags.deployment', 'eq', 'aap-infrastructure-' + deployment_id) | map(attribute='id') | list }}"
 
-    - name: Delete Resource
-      loop: "{{ target_resources }}"
+    - name: Delete resources
       azure.azcollection.azure_rm_resource:
         url: "{{ item }}"
         state: absent
+      loop: "{{ target_resources }}"
