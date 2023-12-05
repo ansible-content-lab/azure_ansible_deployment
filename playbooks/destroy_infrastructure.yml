@@ -52,8 +52,18 @@
   connection: local
   gather_facts: false
   tasks:
-    - name: Delete the resource group and all resources in it
-      azure.azcollection.azure_rm_resourcegroup:
+    - name: Get facts by tags
+      azure.azcollection.azure_rm_resourcegroup_info:
         name: "{{ resource_group }}"
+        list_resources: true
+      register: resource_group_info
+
+    - name: Show resources
+      ansible.builtin.set_fact:
+        target_resources: "{{ resource_group_info.resourcegroups[0].resources | selectattr('tags.' + target_tag, 'defined') | map(attribute='id') | list }}"
+
+    - name: Delete Resource
+      loop: "{{ target_resources }}"
+      azure.azcollection.azure_rm_resource:
+        url: "{{ item }}"
         state: absent
-        force_delete_nonempty: true
