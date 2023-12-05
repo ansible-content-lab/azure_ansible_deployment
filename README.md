@@ -95,6 +95,7 @@ The variables below have default values but can OPTIONALLY be specified when run
 
 | Variable | Description |
 | -------- | ----------- |
+| `ansible_ssh_user` | Defaults to *azureuser* (playbooks/group_vars/all.yml) |
 | `resource_group` | Defaults to *aap_on_azure* (playbooks/group_vars/all.yml) |
 
 Assuming that all variables are configured properly and your Azure account has permissions to deploy the resources defined in this collection, then running the playbook should be a single task. For example:
