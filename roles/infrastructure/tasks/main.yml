@@ -62,11 +62,20 @@
       loop: "{{ groups.installer }}"
       delegate_to: "{{ item }}"
 
-    - name: Copy ssh config to make calling the AAP installer from this role possible
+    - name: Copy ssh config to make calling the AAP installer cleaner
       ansible.builtin.template:
         src: config.j2
         dest: /home/{{ ansible_ssh_user }}/.ssh/config
         mode: '0644'
+      loop: "{{ groups.installer }}"
+      delegate_to: "{{ item }}"
+
+    - name: Copy ssh config to make calling the AAP installer cleaner
+      ansible.builtin.template:
+        src: config.j2
+        dest: /root/.ssh/config
+        mode: '0644'
+      become: true
       loop: "{{ groups.installer }}"
       delegate_to: "{{ item }}"
 
