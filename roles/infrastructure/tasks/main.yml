@@ -49,7 +49,6 @@
   ansible.builtin.include_tasks: eda.yml
 
 - name: Remote tasks
-  delegate_to: "{{ groups.installer[0] }}"
   connection: ssh
   block:
     - name: Copy an SSH private key to the installer host to connect to other servers
@@ -60,12 +59,16 @@
         owner: "{{ ansible_ssh_user }}"
         group: "{{ ansible_ssh_user }}"
         mode: '0600'
+      loop: "{{ groups.installer }}"
+      delegate_to: "{{ item }}"
 
     - name: Copy ssh config to make calling the AAP installer from this role possible
       ansible.builtin.template:
         src: config.j2
         dest: /home/{{ ansible_ssh_user }}/.ssh/config
         mode: '0644'
+      loop: "{{ groups.installer }}"
+      delegate_to: "{{ item }}"
 
     - name: Prepare AAP install - copy inventory to install server
       vars:
@@ -80,6 +83,8 @@
         dest: "{{ infrastructure_aap_installer_inventory_path }}"
         mode: '0644'
       become: true
+      loop: "{{ groups.installer }}"
+      delegate_to: "{{ item }}"
 
 - name: Wait 10 mins for all VMs to become available
   ansible.builtin.wait_for:

@@ -31,7 +31,7 @@ infrastructure_database_extensions:
 # Virtual Machines
 infrastructure_virtual_machines:
   - name: controller
-    instances: 1
+    instances: 3
     subnet: controller-eda-hub
     shape: Standard_B4ms
   - name: execution
