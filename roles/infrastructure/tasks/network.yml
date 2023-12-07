@@ -17,10 +17,11 @@
     delegations: "{{ item.delegations | default(omit) }}"
   loop: "{{ infrastructure_vnet_subnets }}"
   register: infrastructure_subnets
+  when: item.name != 'appgw' or (item.name == 'appgw' and infrastructure_create_controller_lb)
 
 - name: Save subnet names
   ansible.builtin.set_fact:
-    infrastructure_subnet_names: "{{ infrastructure_subnets.results | map(attribute='state.name') | list }}"
+    infrastructure_subnet_names: "{{ infrastructure_subnets.results | selectattr('skipped','undefined') | map(attribute='state.name') | list }}"
 
 - name: Create private dns zone for postgresql
   azure.azcollection.azure_rm_privatednszone:
