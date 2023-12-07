@@ -70,13 +70,6 @@
       "{{ infrastructure_vm_name | replace('-','_') }}_public_ip": "{{ infrastructure_pip.state.ip_address | default('') }}"
       "{{ infrastructure_vm_name | replace('-','_') }}_priv_network_private_ip": "{{ infrastructure_nic.state.ip_configuration.private_ip_address }}"
 
-- name: Add IP of host to installer
-  when: groups.installer is not defined
-  ansible.builtin.add_host:
-    groups:
-      - installer
-    name: "{{ infrastructure_pip.state.ip_address | default(infrastructure_nic.state.ip_configuration.private_ip_address) }}"
-
 - name: Add public IP hosts to group
   ansible.builtin.add_host:
     groups: "{{ public_host_groups + ['public'] | default(['public']) }}"
