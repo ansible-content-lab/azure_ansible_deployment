@@ -31,5 +31,5 @@
       ansible.builtin.wait_for:
         timeout: 30
 
-    - name: Re-attempt deletion (attempt {{ retry_count }})
+    - name: Reattempt deletion (attempt {{ retry_count }})
       ansible.builtin.include_tasks: tasks/delete_resources.yml
