@@ -52,19 +52,5 @@
   connection: local
   gather_facts: false
   tasks:
-    - name: Get resources in the resource group
-      azure.azcollection.azure_rm_resourcegroup_info:
-        name: "{{ resource_group }}"
-        list_resources: true
-      register: resource_group_info
-
-    - name: Filter resources by deployment_id tag
-      ansible.builtin.set_fact:
-        target_resources: "{{ resource_group_info.resourcegroups[0].resources | selectattr('tags.deployment', 'defined') |
-          selectattr('tags.deployment', 'eq', 'aap-infrastructure-' + deployment_id) | map(attribute='id') | list }}"
-
     - name: Delete resources
-      azure.azcollection.azure_rm_resource:
-        url: "{{ item }}"
-        state: absent
-      loop: "{{ target_resources }}"
+      ansible.builtin.include_tasks: delete_resources.yml

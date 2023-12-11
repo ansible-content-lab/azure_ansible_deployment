@@ -1,0 +1,35 @@
+---
+- name: 'Delete Resources'
+  block:
+    - name: Set the retry count
+      ansible.builtin.set_fact:
+        retry_count: "{{ 0 if retry_count is undefined else retry_count | int + 1 }}"
+
+    - name: Get resources in the resource group
+      azure.azcollection.azure_rm_resourcegroup_info:
+        name: "{{ resource_group }}"
+        list_resources: true
+      register: resource_group_info
+
+    - name: Filter resources by deployment_id tag
+      ansible.builtin.set_fact:
+        target_resources: "{{ resource_group_info.resourcegroups[0].resources | selectattr('tags.deployment', 'defined') |
+          selectattr('tags.deployment', 'eq', 'aap-infrastructure-' + deployment_id) | map(attribute='id') | list }}"
+
+    - name: Delete resources
+      azure.azcollection.azure_rm_resource:
+        url: "https://management.azure.com{{ item }}"
+        state: absent
+      loop: "{{ target_resources }}"
+  rescue:
+    - name: Print fail message
+      ansible.builtin.debug:
+        msg: Could not delete all resources. Ended after 10 retries.
+      when: retry_count|int == 10
+
+    - name: Wait for 30 seconds and Re-attempt Deletion
+      ansible.builtin.wait_for:
+        timeout: 30
+    - name: Re-attempt deletion (Attempt {{ retry_count }})
+      ansible.builtin.include_role:
+        name: lab.azure_deployment_dev.delete_resource
