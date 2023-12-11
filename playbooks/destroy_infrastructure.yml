@@ -53,4 +53,4 @@
   gather_facts: false
   tasks:
     - name: Delete resources
-      ansible.builtin.include_tasks: delete_resources.yml
+      ansible.builtin.include_tasks: tasks/delete_resources.yml

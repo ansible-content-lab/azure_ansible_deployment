@@ -1,5 +1,5 @@
 ---
-- name: 'Delete Resources'
+- name: Delete Resources
   block:
     - name: Set the retry count
       ansible.builtin.set_fact:
@@ -25,11 +25,11 @@
     - name: Print fail message
       ansible.builtin.debug:
         msg: Could not delete all resources. Ended after 10 retries.
-      when: retry_count|int == 10
+      when: retry_count | int == 10
 
-    - name: Wait for 30 seconds and Re-attempt Deletion
+    - name: Wait for 30 seconds and reattempt deletion
       ansible.builtin.wait_for:
         timeout: 30
-    - name: Re-attempt deletion (Attempt {{ retry_count }})
-      ansible.builtin.include_role:
-        name: lab.azure_deployment_dev.delete_resource
+
+    - name: Re-attempt deletion (attempt {{ retry_count }})
+      ansible.builtin.include_tasks: tasks/delete_resources.yml
