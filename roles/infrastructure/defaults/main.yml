@@ -33,7 +33,7 @@ infrastructure_database_extensions:
 # Virtual Machines
 infrastructure_virtual_machines:
   - name: controller
-    instances: 2
+    instances: 1
     subnet: controller-eda-hub
     shape: Standard_B4ms
   - name: execution
@@ -52,7 +52,6 @@ infrastructure_virtual_machines:
 # Compute
 infrastructure_admin_username: azureuser
 infrastructure_password_enabled: false
-infrastructure_assign_public_ip: true
 
 infrastructure_image_plan:
   offer: RHEL
@@ -60,7 +59,7 @@ infrastructure_image_plan:
   sku: "9-lvm-gen2"
   version: latest
 
-infrastructure_keypair_name: sre_git
+infrastructure_keypair_name: id_rsa
 infrastructure_ssh_public_keys:
   - path: "/home/azureuser/.ssh/authorized_keys"
     key_data: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/' + infrastructure_keypair_name + '.pub') }}"
@@ -69,6 +68,6 @@ infrastructure_managed_disk_type: Premium_LRS
 infrastructure_os_disk_size_gb: 100
 
 # Load balancer
-infrastructure_create_controller_lb: true
+infrastructure_create_controller_lb: false
 infrastructure_cert_path: ""
 infrastructure_cert: "{{ lookup('file', lookup('env', 'HOME') + infrastructure_cert_path) | b64encode }}"

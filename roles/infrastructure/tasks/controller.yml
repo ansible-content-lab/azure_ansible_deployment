@@ -87,44 +87,54 @@
             password: "{{ infrastructure_certificate_password }}"
             data: "{{ infrastructure_cert }}"
         gateway_ip_configurations:
-          - subnet:
+          - name: appgw_ip_config
+            subnet:
               name: "{{ infrastructure_subnet_names | select('search', 'appgw') | first }}"
               virtual_network_name: "{{ infrastructure_network.state.name }}"
-            name: appgw_ip_config
         frontend_ip_configurations:
             - name: appgw_frontend_ip_config
               public_ip_address: "{{ infrastructure_pip.state.name }}"
         frontend_ports:
-          - port: 443
-            name: appgw_frontend_port
+          - name: appgw_https_frontend_port
+            port: 443
+          - name: appgw_http_frontend_port
+            port: 80
         backend_address_pools:
-          - backend_addresses: "{{ backend_address_pool }}"
-            name: appgw_controller_backend_pool
+          - name: appgw_controller_backend_pool
+            backend_addresses: "{{ backend_address_pool }}"
         backend_http_settings_collection:
-          - port: 443
-            protocol: https
+          - name: appgw_backend_http_settings
+            port: 80
+            protocol: http
             cookie_based_affinity: enabled
             connection_draining:
               drain_timeout_in_sec: 60
               enabled: true
-            name: appgw_backend_http_settings
         http_listeners:
-          - frontend_ip_configuration: appgw_frontend_ip_config
-            frontend_port: appgw_frontend_port
-            name: appgw_http_listener
+          - name: appgw_https_listener
+            frontend_ip_configuration: appgw_frontend_ip_config
+            frontend_port: appgw_https_frontend_port
             protocol: https
             ssl_certificate: appgw_ssl_cert
+          - name: appgw_http_listener
+            frontend_ip_configuration: appgw_frontend_ip_config
+            frontend_port: appgw_http_frontend_port
+            protocol: http
         request_routing_rules:
-          - rule_type: basic
+          - name: appgw_routing_rule
+            rule_type: basic
             backend_address_pool: appgw_controller_backend_pool
             backend_http_settings: appgw_backend_http_settings
+            http_listener: appgw_https_listener
+          - name: appgw_routing_redirect_rule
+            rule_type: basic
             http_listener: appgw_http_listener
-            name: appgw_routing_rule
-        probes:
-          - name: "https-healthcheck"
-            interval: 30
-            path: "/"
-            protocol: "https"
-            pick_host_name_from_backend_http_settings: true
-            timeout: 30
-            unhealthy_threshold: 2
+            redirect_configuration: appgw_redirect_https
+        redirect_configurations:
+          - name: appgw_redirect_https
+            redirect_type: "permanent"
+            target_listener: appgw_https_listener
+            include_path: true
+            include_query_string: true
+            request_routing_rules:
+              - appgw_routing_redirect_rule

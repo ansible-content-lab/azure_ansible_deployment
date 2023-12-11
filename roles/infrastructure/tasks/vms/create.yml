@@ -19,9 +19,6 @@
     location: "{{ infrastructure_region }}"
     tags: "{{ _infrastructure_tags }}"
   register: infrastructure_pip
-  when:
-    - (((infrastructure_virtual_machines | selectattr("name", "eq", "controller") | first).instances < 2) and (not infrastructure_create_controller_lb)) or infrastructure_assign_public_ip
-
 
 - name: Create virtual network interface card
   azure.azcollection.azure_rm_networkinterface:
@@ -32,8 +29,8 @@
     security_group: "{{ infrastructure_nsg.state.name }}"
     location: "{{ infrastructure_region }}"
     ip_configurations:
-      - name: "{{ infrastructure_pip.state.name | default('ipconfig-' + deployment_id) }}"
-        public_ip_address_name: "{{ infrastructure_pip.state.name | default(None) }}"
+      - name: "{{ infrastructure_pip.state.name }}"
+        public_ip_address_name: "{{ infrastructure_pip.state.name }}"
     tags: "{{ _infrastructure_tags }}"
   register: infrastructure_nic
 
@@ -81,7 +78,6 @@
   ansible.builtin.add_host:
     groups: "{{ public_host_groups + ['public'] | default(['public']) }}"
     name: "{{ infrastructure_pip.state.ip_address }}"
-  when: infrastructure_assign_public_ip
 
 - name: Add private IPs hosts to group
   ansible.builtin.add_host:
