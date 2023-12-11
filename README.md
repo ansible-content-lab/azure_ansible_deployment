@@ -103,7 +103,7 @@ aap_admin_password=example_aap_admin_password"
 
 ### Load Balancer (Application Gateway)
 
-By default, no LB is created for the controller VMs. If the `infrastructure_create_controller_lb` is set to `True` on `roles/infrastructure/defaults` and the number of controller VMs is greater than two, the LB will be created. By default, the LB is created with a HTTPS listener that will need a PFX password-protected certificate to be provided. Details can be found on `roles/infrastructure/defaults`. If a LB is deployed and certificate is provided, a password needs to be specified while running the collection. For example:
+By default, no LB is created for the controller VMs. If the `infrastructure_create_controller_lb` is set to `True` on `roles/infrastructure/defaults` and the number of controller VMs is greater than one, the LB will be created. By default, the LB is created with a HTTPS listener that will need a PFX password-protected certificate to be provided. Details can be found on `roles/infrastructure/defaults`. If a LB is deployed and certificate is provided, a password needs to be specified while running the collection. For example:
 
 ```bash
 ansible-playbook lab.azure_deployment.deploy_infrastructure --extra-vars "aap_red_hat_username=$RED_HAT_ACCOUNT aap_red_hat_password=$RED_HAT_PASSWORD infrastructure_database_server_user=example_user infrastructure_database_server_password=example_password infrastructure_certificate_password=example_password"
