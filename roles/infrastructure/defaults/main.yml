@@ -58,7 +58,7 @@ infrastructure_password_enabled: false
 #   version: latest
 
 infrastructure_image_plan:
-  name: aap-installer-1701715975
+  name: aap-installer-1701971362
   resource_group: luiz-group
 
 infrastructure_keypair_name: id_rsa
