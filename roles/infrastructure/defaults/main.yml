@@ -50,22 +50,28 @@ infrastructure_virtual_machines:
     shape: Standard_B4ms
 
 # Compute
-infrastructure_admin_username: azureuser
+infrastructure_admin_username: "{{ ansible_ssh_user }}"
 infrastructure_password_enabled: false
 
+# infrastructure_image_plan:
+#   offer: RHEL
+#   publisher: RedHat
+#   sku: "9-lvm-gen2"
+#   version: latest
+
 infrastructure_image_plan:
-  offer: RHEL
-  publisher: RedHat
-  sku: "9-lvm-gen2"
-  version: latest
+  name: aap-installer-1701715975
+  resource_group: luiz-group
 
 infrastructure_keypair_name: id_rsa
 infrastructure_ssh_public_keys:
-  - path: "/home/azureuser/.ssh/authorized_keys"
+  - path: "/home/{{ ansible_ssh_user }}/.ssh/authorized_keys"
     key_data: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/' + infrastructure_keypair_name + '.pub') }}"
 
 infrastructure_managed_disk_type: Premium_LRS
 infrastructure_os_disk_size_gb: 100
+
+infrastructure_aap_installer_inventory_path: "/opt/ansible-automation-platform/installer/inventory_azure"
 
 # Load balancer
 infrastructure_create_controller_lb: false

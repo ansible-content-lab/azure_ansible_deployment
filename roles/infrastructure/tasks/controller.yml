@@ -1,5 +1,5 @@
 ---
-- name: Include get vms task
+- name: Include get VMs task
   ansible.builtin.include_tasks: vms/get.yml
   vars:
     app_tag: controller
@@ -8,17 +8,6 @@
       - controller_private
     public_host_groups:
       - controller_public
-
-- name: Add public IP host to installer
-  ansible.builtin.add_host:
-    groups:
-      - installer
-    name: "{{ infrastructure_running_virtual_machine_public_ip.results[0].publicipaddresses[0].ip_address }}"
-  when:
-    - infrastructure_running_virtual_machine_public_ip is defined
-    - infrastructure_running_virtual_machine_public_ip.results | length > 0
-    - (groups.installer is not defined or groups.installer | length == 0)
-  changed_when: false
 
 - name: Set number of controller VMs to create
   ansible.builtin.set_fact:
@@ -29,7 +18,7 @@
   ansible.builtin.debug:
     msg: "Creating controller VMs: {{ infrastructure_controller_vms_to_create }}"
 
-- name: Include create vm task
+- name: Include create VM task
   ansible.builtin.include_tasks: vms/create.yml
   loop: "{{ range(infrastructure_controller_vms_to_create | int) }}"
   vars:
@@ -41,6 +30,27 @@
     public_host_groups:
       - controller_public
     subnet: "{{ infrastructure_subnet_names | select('search', 'controller') | first }}"
+
+- name: Get VMs again to get their public IPs
+  ansible.builtin.include_tasks: vms/get.yml
+  vars:
+    app_tag: controller
+    private_host_groups:
+      - aap
+      - controller_private
+    public_host_groups:
+      - controller_public
+
+- name: Add controller public IPs to installer
+  ansible.builtin.add_host:
+    groups:
+      - installer
+    name: "{{ item.publicipaddresses[0].ip_address }}"
+  loop: "{{ infrastructure_running_virtual_machine_public_ip.results }}"
+  when:
+    - infrastructure_running_virtual_machine_public_ip is defined
+    - infrastructure_running_virtual_machine_public_ip.results | length > 0
+  changed_when: false
 
 # Creating the LB operates in its own block and will connect to controller VMs if they were either created
 # when running this deployment for the first time or if they were created in a previous run of the deployment.

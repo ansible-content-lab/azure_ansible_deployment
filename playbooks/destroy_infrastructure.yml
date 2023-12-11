@@ -4,6 +4,15 @@
   connection: local
   gather_facts: false
   tasks:
+    - name: Check for the resource group
+      azure.azcollection.azure_rm_resourcegroup_info:
+        name: "{{ resource_group }}"
+      register: rg
+
+    - name: End the play if there is no resource group
+      ansible.builtin.meta: end_host
+      when: rg.resourcegroups | length == 0
+
     - name: Get the existing VMs
       azure.azcollection.azure_rm_publicipaddress_info:
         resource_group: "{{ resource_group }}"
