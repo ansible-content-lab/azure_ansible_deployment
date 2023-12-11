@@ -26,6 +26,7 @@
     name: "nic-{{ deployment_id }}-{{ app_tag }}-{{ infrastructure_vm_deployment_id }}"
     virtual_network: "{{ infrastructure_network.state.id }}"
     subnet: "{{ subnet }}"
+    public_ip_name: "{{ infrastructure_pip.state.name }}"
     security_group: "{{ infrastructure_nsg.state.name }}"
     location: "{{ infrastructure_region }}"
     ip_configurations:
@@ -58,13 +59,13 @@
 - name: Output the IP of new VM
   ansible.builtin.debug:
     msg:
-      - "Public IP for {{ infrastructure_vm_name }}: {{ infrastructure_pip.state.ip_address | default('') }}"
+      - "Public IP for {{ infrastructure_vm_name }}: {{ infrastructure_pip.state.ip_address }}"
       - "Private IP for {{ infrastructure_vm_name }}: {{ infrastructure_nic.state.ip_configuration.private_ip_address }}"
 
 - name: Set stats for new VM
   ansible.builtin.set_stats:
     data:
-      "{{ infrastructure_vm_name | replace('-','_') }}_public_ip": "{{ infrastructure_pip.state.ip_address | default('') }}"
+      "{{ infrastructure_vm_name | replace('-','_') }}_public_ip": "{{ infrastructure_pip.state.ip_address }}"
       "{{ infrastructure_vm_name | replace('-','_') }}_priv_network_private_ip": "{{ infrastructure_nic.state.ip_configuration.private_ip_address }}"
 
 - name: Add public IP hosts to group
