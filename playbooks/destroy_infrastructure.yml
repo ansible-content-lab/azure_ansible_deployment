@@ -52,8 +52,5 @@
   connection: local
   gather_facts: false
   tasks:
-    - name: Delete the resource group and all resources in it
-      azure.azcollection.azure_rm_resourcegroup:
-        name: "{{ resource_group }}"
-        state: absent
-        force_delete_nonempty: true
+    - name: Delete resources
+      ansible.builtin.include_tasks: tasks/delete_resources.yml
