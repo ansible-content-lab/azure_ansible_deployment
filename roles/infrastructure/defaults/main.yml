@@ -60,7 +60,7 @@ infrastructure_password_enabled: false
 #   version: latest
 
 infrastructure_image_plan:
-  name: aap-installer-1701715975
+  name: aap-installer-1701971362
   resource_group: luiz-group
 
 infrastructure_keypair_name: id_rsa
@@ -76,4 +76,4 @@ infrastructure_aap_installer_inventory_path: "/opt/ansible-automation-platform/i
 # Load balancer
 infrastructure_create_controller_lb: false
 infrastructure_cert_path: ""
-infrastructure_cert: "{{ lookup('file', lookup('env', 'HOME') + infrastructure_cert_path) | b64encode }}"
+infrastructure_cert: "{{ lookup('file', infrastructure_cert_path) | b64encode }}"

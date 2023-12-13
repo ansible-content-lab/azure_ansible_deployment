@@ -10,7 +10,7 @@
     idempotency: true
     provider: DBforPostgreSQL
     resource_group: "{{ resource_group }}"
-    resource_name: aap-infrastructure-{{ deployment_id }}-db
+    resource_name: db-{{ deployment_id }}
     resource_type: flexibleServers
     api_version: "2022-12-01"
     body:
@@ -35,7 +35,7 @@
   azure.azcollection.azure_rm_resource_info:
     provider: DBforPostgreSQL
     resource_group: "{{ resource_group }}"
-    resource_name: aap-infrastructure-{{ deployment_id }}-db
+    resource_name: db-{{ deployment_id }}
     resource_type: flexibleServers
     api_version: "2022-12-01"
   register: result
@@ -48,7 +48,7 @@
 - name: Create database for controller
   azure.azcollection.azure_rm_resource:
     idempotency: true
-    resource_name: aap-infrastructure-{{ deployment_id }}-db
+    resource_name: db-{{ deployment_id }}
     resource_group: "{{ resource_group }}"
     provider: DBforPostgreSQL
     resource_type: flexibleServers
@@ -63,7 +63,7 @@
 - name: Create database for hub
   azure.azcollection.azure_rm_resource:
     idempotency: true
-    resource_name: aap-infrastructure-{{ deployment_id }}-db
+    resource_name: db-{{ deployment_id }}
     resource_group: "{{ resource_group }}"
     provider: DBforPostgreSQL
     resource_type: flexibleServers
@@ -79,7 +79,7 @@
 - name: Create database for Event-Driven Ansible
   azure.azcollection.azure_rm_resource:
     idempotency: true
-    resource_name: aap-infrastructure-{{ deployment_id }}-db
+    resource_name: db-{{ deployment_id }}
     resource_group: "{{ resource_group }}"
     provider: DBforPostgreSQL
     resource_type: flexibleServers
@@ -96,7 +96,7 @@
   azure.azcollection.azure_rm_resource_info:
     provider: DBforPostgreSQL
     resource_group: "{{ resource_group }}"
-    resource_name: aap-infrastructure-{{ deployment_id }}-db/configurations/azure.extensions
+    resource_name: db-{{ deployment_id }}/configurations/azure.extensions
     resource_type: flexibleServers
     api_version: "2022-12-01"
   register: postgresql_info
@@ -106,7 +106,7 @@
     idempotency: true
     provider: DBforPostgreSQL
     resource_group: "{{ resource_group }}"
-    resource_name: aap-infrastructure-{{ deployment_id }}-db/configurations/azure.extensions
+    resource_name: db-{{ deployment_id }}/configurations/azure.extensions
     resource_type: flexibleServers
     body: "{{ postgresql_info.response[0] |
       combine({'properties': {'value': (infrastructure_database_extensions | default('') | join(',')), 'source': 'user-override'}}) }}"

@@ -81,10 +81,9 @@
       register: infrastructure_pip
 
     - name: Create instance of Application Gateway
-      azure_rm_appgateway:
+      azure.azcollection.azure_rm_appgateway:
         resource_group: "{{ resource_group }}"
         name: "lb-{{ deployment_id }}-controller"
-        tags: "{{ _infrastructure_tags }}"
         sku:
           name: standard_v2
           tier: standard_v2
@@ -102,8 +101,8 @@
               name: "{{ infrastructure_subnet_names | select('search', 'appgw') | first }}"
               virtual_network_name: "{{ infrastructure_network.state.name }}"
         frontend_ip_configurations:
-            - name: appgw_frontend_ip_config
-              public_ip_address: "{{ infrastructure_pip.state.name }}"
+          - name: appgw_frontend_ip_config
+            public_ip_address: "{{ infrastructure_pip.state.name }}"
         frontend_ports:
           - name: appgw_https_frontend_port
             port: 443
@@ -142,9 +141,21 @@
             redirect_configuration: appgw_redirect_https
         redirect_configurations:
           - name: appgw_redirect_https
-            redirect_type: "permanent"
+            redirect_type: permanent
             target_listener: appgw_https_listener
             include_path: true
             include_query_string: true
             request_routing_rules:
               - appgw_routing_redirect_rule
+
+    - name: Apply tags to the LB
+      azure.azcollection.azure_rm_resource:
+        idempotency: true
+        resource_group: "{{ resource_group }}"
+        resource_name: lb-{{ deployment_id }}-controller
+        provider: Network
+        resource_type: applicationGateways
+        method: PATCH
+        api_version: "2020-03-01"
+        body:
+          tags: "{{ _infrastructure_tags }}"

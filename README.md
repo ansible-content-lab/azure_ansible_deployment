@@ -103,11 +103,15 @@ aap_admin_password=example_aap_admin_password"
 
 ### Load Balancer (Application Gateway)
 
-By default, no LB is created for the controller VMs. If the `infrastructure_create_controller_lb` is set to `True` on `roles/infrastructure/defaults` and the number of controller VMs is greater than one, the LB will be created. By default, the LB is created with a HTTPS listener that will need a PFX password-protected certificate to be provided. Details can be found on `roles/infrastructure/defaults`. If a LB is deployed and certificate is provided, a password needs to be specified while running the collection. For example:
-
+By default, no LB is created for the controller VMs.
+Set `infrastructure_create_controller_lb` to `true` to create the LB.
+There needs to be more than one controller VM for the LB to be created as well.
+By default, the LB is created with a HTTPS listener that will need a PFX password-protected certificate to be provided.
+Set `infrastructure_cert_path` to the path of the certificate to use.
+If an LB is deployed and a certificate is provided, a password needs to be specified while running the collection.
+For example:
 ```bash
-ansible-playbook lab.azure_deployment.deploy_infrastructure --extra-vars "aap_red_hat_username=$RED_HAT_ACCOUNT aap_red_hat_password=$RED_HAT_PASSWORD infrastructure_database_server_user=example_user infrastructure_database_server_password=example_password infrastructure_certificate_password=example_password"
-```
+ansible-playbook lab.azure_deployment.deploy_infrastructure --extra-vars "aap_red_hat_username=$RED_HAT_ACCOUNT aap_red_hat_password=$RED_HAT_PASSWORD infrastructure_database_server_user=example_user infrastructure_database_server_password=example_password infrastructure_create_controller_lb=true infrastructure_cert_path=/path/to/cert infrastructure_certificate_password=example_password"
 
 ### Installing Red Hat Ansible Automation Platform
 
