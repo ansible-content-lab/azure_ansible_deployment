@@ -22,6 +22,7 @@ There are variables that can be used to skip or prevent steps by setting variabl
 | Create a network security group | Creates a security group that allows AAP ports within the VNET and HTTPS and automation mesh ports externally. |
 | Create a database server | Creates a PostgreSQL Flexible Server and the necessary databases inside of it for the controller, hub, and Event-Driven Ansible components. |
 | Create the controller VMs | Creates VMs for controller, a public IP, and the virtual network interface card with the public IP attached. |
+| Create the controller LB | Creates the Load Balancer (Application Gateway) for the controller VMs. |
 | Create the execution nodes VMs | Creates VMs for execution nodes (if enabled), a public IP, and the virtual network interface card with the public IP attached. |
 | Create the hub VMs | Creates VMs for private automation hub, a public IP, and the virtual network interface card with the public IP attached. |
 | Create the Event-Driven Ansible VMs | Creates VMs for Event-Driven Ansible (if enabled), a public IP, and the virtual network interface card with the public IP attached. |
@@ -99,6 +100,32 @@ Assuming that all variables are configured properly and your Azure account has p
 ansible-playbook lab.azure_deployment.deploy_infrastructure --extra-vars "aap_red_hat_username=$RED_HAT_ACCOUNT aap_red_hat_password=$RED_HAT_PASSWORD infrastructure_database_server_user=example_user infrastructure_database_server_password=example_database_server_password
 aap_admin_password=example_aap_admin_password"
 ```
+
+### Load Balancer (Application Gateway)
+
+By default, no LB is created for the controller VMs.
+Set `infrastructure_create_controller_lb` to `true` to create the LB.
+There needs to be more than one controller VM for the LB to be created as well.
+
+By default, the LB is created with a HTTPS listener that will need a PFX password-protected certificate to be provided.
+Set `infrastructure_cert_path` to the path of the certificate to use.
+If an LB is deployed and a certificate is provided, a password needs to be specified while running the collection.
+
+For example:
+
+```bash
+ansible-playbook lab.azure_deployment.deploy_infrastructure --extra-vars "aap_red_hat_username=$RED_HAT_ACCOUNT aap_red_hat_password=$RED_HAT_PASSWORD infrastructure_database_server_user=example_user infrastructure_database_server_password=example_password infrastructure_certificate_password=example_password"
+```
+
+Once all the infrastructure is deployed, the LB backend VM targets will look unhealthy because AAP is not yet installed and additional actions need to be performed on the LB itself.
+
+Once AAP has been installed, a self-signed certificate will be issued as part of the defualt installation.
+The CA used during the installation needs to be configured within the LB to validate the HTTPS/443 connectivity between the LB and the backend VMs.
+For that we'll need to grab the CA from the VM where we have initiated the AAP installation.
+Copy the contents of `/etc/pki/ca-trust/source/anchors/ansible-automation-platform-managed-ca-cert.crt` and save that into a `.cer` file.
+Then in the Azure portal, go to the Application Gateway > Backend settings > click on the existing backend settings > Click on 'No' on the `Backend server’s certificate is issued by a well-known CA`.
+Click the `Add certificate` button and add the `.cer` file.
+Once that is done, the Application Gateway address will be able to reach AAP on the backend VMs.
 
 ### Installing Red Hat Ansible Automation Platform
 

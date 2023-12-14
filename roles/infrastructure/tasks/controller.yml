@@ -51,3 +51,112 @@
     - infrastructure_running_virtual_machine_public_ip is defined
     - infrastructure_running_virtual_machine_public_ip.results | length > 0
   changed_when: false
+
+# Creating the LB operates in its own block and will connect to controller VMs if they were either created
+# when running this deployment for the first time or if they were created in a previous run of the deployment.
+
+- name: Create a load balancer for controller instances
+  when:
+    - (infrastructure_virtual_machines | selectattr("name", "eq", "controller") | first).instances > 1
+    - infrastructure_create_controller_lb
+    - infrastructure_cert is defined
+    - infrastructure_cert | length > 0
+  block:
+
+    - name: Build list of backend controller IP addresses
+      ansible.builtin.set_fact:
+        backend_address_pool: "{{ backend_address_pool + [{'ip_address': item}] }}"
+      loop: "{{ groups.private }}"
+      vars:
+        backend_address_pool: []
+
+    - name: Create public IP address for the load balancer
+      azure.azcollection.azure_rm_publicipaddress:
+        resource_group: "{{ resource_group }}"
+        allocation_method: Static
+        sku: Standard
+        name: "pip-{{ deployment_id }}-controller-appgw"
+        location: "{{ infrastructure_region }}"
+        tags: "{{ _infrastructure_tags }}"
+      register: infrastructure_pip
+
+    - name: Create instance of Application Gateway
+      azure.azcollection.azure_rm_appgateway:
+        resource_group: "{{ resource_group }}"
+        name: "lb-{{ deployment_id }}-controller"
+        sku:
+          name: standard_v2
+          tier: standard_v2
+          capacity: 2
+        ssl_policy:
+          policy_type: predefined
+          policy_name: ssl_policy20170401_s
+        ssl_certificates:
+          - name: appgw_ssl_cert
+            password: "{{ infrastructure_certificate_password }}"
+            data: "{{ infrastructure_cert }}"
+        gateway_ip_configurations:
+          - name: appgw_ip_config
+            subnet:
+              name: "{{ infrastructure_subnet_names | select('search', 'appgw') | first }}"
+              virtual_network_name: "{{ infrastructure_network.state.name }}"
+        frontend_ip_configurations:
+          - name: appgw_frontend_ip_config
+            public_ip_address: "{{ infrastructure_pip.state.name }}"
+        frontend_ports:
+          - name: appgw_https_frontend_port
+            port: 443
+          - name: appgw_http_frontend_port
+            port: 80
+        backend_address_pools:
+          - name: appgw_controller_backend_pool
+            backend_addresses: "{{ backend_address_pool }}"
+        backend_http_settings_collection:
+          - name: appgw_backend_https_settings
+            port: 443
+            protocol: https
+            pick_host_name_from_backend_address: true
+            cookie_based_affinity: enabled
+            connection_draining:
+              drain_timeout_in_sec: 60
+              enabled: true
+        http_listeners:
+          - name: appgw_https_listener
+            frontend_ip_configuration: appgw_frontend_ip_config
+            frontend_port: appgw_https_frontend_port
+            protocol: https
+            ssl_certificate: appgw_ssl_cert
+          - name: appgw_http_listener
+            frontend_ip_configuration: appgw_frontend_ip_config
+            frontend_port: appgw_http_frontend_port
+            protocol: http
+        request_routing_rules:
+          - name: appgw_routing_rule
+            rule_type: basic
+            backend_address_pool: appgw_controller_backend_pool
+            backend_http_settings: appgw_backend_https_settings
+            http_listener: appgw_https_listener
+          - name: appgw_routing_redirect_rule
+            rule_type: basic
+            http_listener: appgw_http_listener
+            redirect_configuration: appgw_redirect_https
+        redirect_configurations:
+          - name: appgw_redirect_https
+            redirect_type: permanent
+            target_listener: appgw_https_listener
+            include_path: true
+            include_query_string: true
+            request_routing_rules:
+              - appgw_routing_redirect_rule
+
+    - name: Apply tags to the LB
+      azure.azcollection.azure_rm_resource:
+        idempotency: true
+        resource_group: "{{ resource_group }}"
+        resource_name: lb-{{ deployment_id }}-controller
+        provider: Network
+        resource_type: applicationGateways
+        method: PATCH
+        api_version: "2020-03-01"
+        body:
+          tags: "{{ _infrastructure_tags }}"

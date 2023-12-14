@@ -7,7 +7,7 @@
   ansible.builtin.set_fact:
     infrastructure_vm_name: "vm-{{ deployment_id }}-{{ app_tag }}-{{ infrastructure_vm_deployment_id }}"
 
-- name: Debug VM name
+- name: Output the VM name
   ansible.builtin.debug:
     var: infrastructure_vm_name
 
