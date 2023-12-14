@@ -112,9 +112,10 @@
           - name: appgw_controller_backend_pool
             backend_addresses: "{{ backend_address_pool }}"
         backend_http_settings_collection:
-          - name: appgw_backend_http_settings
-            port: 80
-            protocol: http
+          - name: appgw_backend_https_settings
+            port: 443
+            protocol: https
+            pick_host_name_from_backend_address: true
             cookie_based_affinity: enabled
             connection_draining:
               drain_timeout_in_sec: 60
@@ -133,7 +134,7 @@
           - name: appgw_routing_rule
             rule_type: basic
             backend_address_pool: appgw_controller_backend_pool
-            backend_http_settings: appgw_backend_http_settings
+            backend_http_settings: appgw_backend_https_settings
             http_listener: appgw_https_listener
           - name: appgw_routing_redirect_rule
             rule_type: basic

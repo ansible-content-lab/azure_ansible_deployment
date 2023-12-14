@@ -27,7 +27,7 @@
         storage:
           storageSizeGB: "{{ infrastructure_database_server_size }}"
         network:
-          "delegatedSubnetResourceId": "{{ (infrastructure_subnets.results | selectattr('state.id', 'search', 'postgres'))[0].state.id }}"
+          "delegatedSubnetResourceId": "{{ (infrastructure_subnets.results | selectattr('skipped', 'undefined') | selectattr('state.id', 'search', 'postgres'))[0].state.id }}"
           "privateDnsZoneArmResourceId": "{{ infrastructure_private_zone.state.id }}"
       tags: "{{ _infrastructure_tags }}"
 
