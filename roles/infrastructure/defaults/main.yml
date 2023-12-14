@@ -53,15 +53,20 @@ infrastructure_virtual_machines:
 infrastructure_admin_username: "{{ ansible_ssh_user }}"
 infrastructure_password_enabled: false
 
-# infrastructure_image_plan:
-#   offer: RHEL
-#   publisher: RedHat
-#   sku: "9-lvm-gen2"
-#   version: latest
+infrastructure_image:
+  offer: rh-ansible-self-managed
+  publisher: redhat
+  sku: "rh-aap2"
+  version: latest
 
-infrastructure_image_plan:
-  name: aap-installer-1702486099-gen2
-  resource_group: luiz-group
+infrastructure_plan:
+  product: rh-ansible-self-managed
+  publisher: redhat
+  name: "rh-aap2"
+
+# infrastructure_image:
+#   name: aap-installer-1702486099-gen2
+#   resource_group: luiz-group
 
 infrastructure_keypair_name: id_rsa
 infrastructure_ssh_public_keys:
