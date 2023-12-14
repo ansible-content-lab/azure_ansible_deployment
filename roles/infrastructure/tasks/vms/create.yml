@@ -51,7 +51,9 @@
     network_interfaces: "{{ infrastructure_nic.state.name }}"
     managed_disk_type: "{{ infrastructure_managed_disk_type }}"
     os_disk_size_gb: "{{ infrastructure_os_disk_size_gb }}"
-    image: "{{ infrastructure_image_plan }}"
+    plan: "{{ infrastructure_plan | default(omit) }}"
+    accept_terms: "{{ infrastructure_plan is defined }}"
+    image: "{{ infrastructure_image }}"
     location: "{{ infrastructure_region }}"
     tags: "{{ vm_tags }}"
   register: infrastructure_vm
