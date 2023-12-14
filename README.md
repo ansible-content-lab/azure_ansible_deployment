@@ -119,9 +119,13 @@ ansible-playbook lab.azure_deployment.deploy_infrastructure --extra-vars "aap_re
 
 Once all the infrastructure is deployed, the LB backend VM targets will look unhealthy because AAP is not yet installed and additional actions need to be performed on the LB itself.
 
-Once AAP has been installed, a self-signed certificate will be issued as part of the defualt installation. The CA used during the installation needs to be configured within the LB to validate the HTTPS/443 connectivity between the LB and the backend VMs.
-For that we'll need to grab the CA from the VM where we have initiated the AAP installation and grab the contents of `/etc/pki/ca-trust/source/anchors/ansible-automation-platform-managed-ca-cert.crt` and save that into a `.CER` file. Once we're done, we'll need to go to the `Application Gateway deployed > Backend settings > click on the existing backend settings > Click on 'No' on the "Backend server’s certificate is issued by a well-known CA"` and add the `.CER` file that we just saved. Once that is done, the Application Gateway address should be able to reach the AAP on the backend VMs.
-
+Once AAP has been installed, a self-signed certificate will be issued as part of the defualt installation.
+The CA used during the installation needs to be configured within the LB to validate the HTTPS/443 connectivity between the LB and the backend VMs.
+For that we'll need to grab the CA from the VM where we have initiated the AAP installation.
+Copy the contents of `/etc/pki/ca-trust/source/anchors/ansible-automation-platform-managed-ca-cert.crt` and save that into a `.cer` file.
+Then in the Azure portal, go to the Application Gateway > Backend settings > click on the existing backend settings > Click on 'No' on the `Backend server’s certificate is issued by a well-known CA`.
+Click the `Add certificate` button and add the `.cer` file.
+Once that is done, the Application Gateway address will be able to reach AAP on the backend VMs.
 
 ### Installing Red Hat Ansible Automation Platform
 
