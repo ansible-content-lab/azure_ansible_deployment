@@ -22,8 +22,8 @@
         state: absent
       loop: "{{ target_resources }}"
   rescue:
-    - name: Print fail message
-      ansible.builtin.debug:
+    - name: Fail if too many tries
+      ansible.builtin.fail:
         msg: Could not delete all resources. Ended after 10 retries.
       when: retry_count | int == 10
 
