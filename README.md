@@ -101,6 +101,12 @@ ansible-playbook lab.azure_deployment.deploy_infrastructure --extra-vars "aap_re
 aap_admin_password=example_aap_admin_password"
 ```
 
+**NOTE:**
+The playbook will pause and wait for you to answer an SSH fingerprint question for each VM while deploying the infrastructure. If you wish to bypass this manual step, run the following command before running the playbook: 
+```bash
+export ANSIBLE_HOST_KEY_CHECKING=False
+```
+
 ### Load Balancer (Application Gateway)
 
 By default, no LB is created for the controller VMs.
