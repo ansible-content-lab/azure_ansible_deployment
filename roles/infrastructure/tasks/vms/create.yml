@@ -26,7 +26,7 @@
     name: "nic-{{ deployment_id }}-{{ app_tag }}-{{ infrastructure_vm_deployment_id }}"
     virtual_network: "{{ infrastructure_network.state.id }}"
     subnet: "{{ subnet }}"
-    public_ip_name: "{{ infrastructure_pip.state.name }}"
+    #public_ip_name: "{{ infrastructure_pip.state.name }}"
     security_group: "{{ infrastructure_nsg.state.name }}"
     location: "{{ infrastructure_region }}"
     ip_configurations:
