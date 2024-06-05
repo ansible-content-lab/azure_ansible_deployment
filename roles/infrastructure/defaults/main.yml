@@ -64,10 +64,6 @@ infrastructure_plan:
   publisher: redhat
   name: "rh-aap2"
 
-# infrastructure_image:
-#   name: aap-installer-1702486099-gen2
-#   resource_group: luiz-group
-
 infrastructure_keypair_name: id_rsa
 infrastructure_ssh_public_keys:
   - path: "/home/{{ ansible_ssh_user }}/.ssh/authorized_keys"
