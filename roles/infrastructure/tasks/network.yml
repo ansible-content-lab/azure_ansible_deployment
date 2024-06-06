@@ -37,6 +37,9 @@
     virtual_network: "{{ infrastructure_network.state.name }}"
     resource_group: "{{ resource_group }}"
     tags: "{{ _infrastructure_tags }}"
+  register: pzl_result
+  failed_when:
+    - '"link cannot be changed" not in pzl_result.msg'
 
 - name: Create Network Security Group that allows SSH and RDP
   azure.azcollection.azure_rm_securitygroup:
