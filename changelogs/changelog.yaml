@@ -1,0 +1,18 @@
+ancestor: null
+releases:
+  1.0.1:
+    changes:
+      minor_changes:
+      - Added `.gitattributes` file.
+      - Added `.markdownlint.yaml` file.
+      - Added community.general to list of dependent collections.
+      - Set version requirement for Azure collection to limit unintended breaking
+        changes.
+      - Update to VM resource creation to avoid Azure collection module deprecation
+        error.
+      release_summary: 'General updates to prevent errors during infrastructure deployment.
+
+        '
+    fragments:
+    - updates.yml
+    release_date: '2024-06-06'
