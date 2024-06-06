@@ -39,6 +39,7 @@
     tags: "{{ _infrastructure_tags }}"
   register: pzl_result
   failed_when:
+    - pzl_result.msg is defined
     - '"link cannot be changed" not in pzl_result.msg'
 
 - name: Create Network Security Group that allows SSH and RDP
