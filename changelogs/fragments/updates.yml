@@ -1,0 +1,7 @@
+---
+release_notes: General updates to prevent errors during infrastructure deployment.
+minor_changes:
+  - Set version requirement for Azure collection to limit unintended breaking changes.
+  - Added community.general to list of dependent collections.
+  - Added `.gitattributes` file.
+  - Added `.markdownlint.yaml` file.
