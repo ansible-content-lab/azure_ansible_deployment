@@ -40,11 +40,13 @@
     resource_type: flexibleServers
     api_version: "2022-12-01"
   register: result
-  until: result.response[0].properties is defined and result.response[0].properties.state == 'Ready'
-  retries:
-    20
-  delay:
-    60
+  until:
+    - result.response is defined
+    - result.response | length > 0
+    - result.response[0].properties is defined
+    - result.response[0].properties.state == 'Ready'
+  retries: 60
+  delay: 60
 
 - name: Create database for controller
   azure.azcollection.azure_rm_resource:
